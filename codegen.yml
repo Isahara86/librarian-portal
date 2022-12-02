@@ -1,0 +1,15 @@
+overwrite: true
+schema: "https://api.gummersbach-library.net/graphql"
+generates:
+  ./src/codegen/fragment-matcher.ts:
+    plugins:
+      - fragment-matcher
+  ./src/codegen/generated-types.tsx:
+    documents: "**/operations/**/*.ts"
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+  ./src/codegen/schema.graphql:
+    plugins:
+      - schema-ast

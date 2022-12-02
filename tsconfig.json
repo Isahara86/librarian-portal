@@ -1,26 +1,41 @@
 {
+  "compileOnSave": true,
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+    "module": "commonjs",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "target": "ES2021",
+    "sourceMap": true,
     "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
+    "baseUrl": "./",
+    "strictNullChecks": true,
+    "useUnknownInCatchVariables": false,
+    "paths": {
+      "containers": ["src/containers"],
+      "components": ["src/components"],
+      "hooks": ["src/hooks"],
+      "codegen": ["src/codegen"],
+      "operations": ["src/operations"],
+      "routes": ["src/routes"],
+      "config": ["src/config"],
+      "styles": ["src/styles"],
+      "utils": ["src/utils"],
+      "models": ["src/models"],
+      "types": ["src/types"],
+      "menus": ["src/menus"],
+      "links": ["src/links"],
+      "vars": ["src/vars"],
+      "images": ["src/images"],
+    }
   },
   "include": [
-    "src"
+    "./src"
+  ],
+  "exclude": [
+    // "node_modules",
+    "dist",
+    "src/codegen"
   ]
 }
