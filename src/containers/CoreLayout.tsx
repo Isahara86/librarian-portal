@@ -1,3 +1,5 @@
+import 'antd/dist/antd.less';
+import '../styles.scss';
 import enUS from 'antd/lib/locale/en_US';
 import {
   ConfigProvider,

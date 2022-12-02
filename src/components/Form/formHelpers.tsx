@@ -33,7 +33,7 @@ export const onFieldsWithNotificationChange = (form: FormInstance) => {
               onClick={ () => {
                 form.submit();
 
-                notification.destroy(notificationKey);
+                notification.close(notificationKey);
               } }
             >
               Update

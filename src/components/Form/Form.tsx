@@ -67,7 +67,7 @@ const Form: React.FC<PropsWithChildren<Props>> = ({
 }) => {
   useEffect(() => () => {
     changedFieldsNamesVar([]);
-    notification.destroy(notificationKey);
+    notification.close(notificationKey);
   }, []);
 
   return (
@@ -77,7 +77,7 @@ const Form: React.FC<PropsWithChildren<Props>> = ({
       labelCol={ { span: labelCol } }
       wrapperCol={ { span: wrapperCol } }
       onFinish={ values => {
-        notification.destroy(notificationKey);
+        notification.close(notificationKey);
         onSubmit(values);
       } }
       initialValues={ initialValues }
