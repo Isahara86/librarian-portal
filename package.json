@@ -2,8 +2,17 @@
   "name": "librarian-portal",
   "version": "0.1.0",
   "private": true,
-  "engines": {
-    "node": ">=16.18.0 <17"
+  "scripts": {
+    "build:prod": "cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --config ./webpack/webpack.prod.ts",
+    "dev": "cross-env NODE_ENV=development webpack serve --config ./webpack/webpack.dev.ts",
+    "prod": "npm run build:prod && cross-env NODE_ENV=production ts-node server/prod.ts",
+    "start": "cross-env NODE_ENV=production ts-node server/prod.ts",
+    "test": "jest --maxWorkers=8",
+    "test:update": "jest --maxWorkers=8 -u",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "graphql:init": "graphql-codegen init",
+    "graphql:generate": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
     "@ant-design/icons": "^4.8.0",
@@ -21,18 +30,6 @@
     "react-helmet": "^6.1.0",
     "react-responsive": "^9.0.2",
     "react-router-dom": "^6.4.3"
-  },
-  "scripts": {
-    "build:prod": "cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --config ./webpack/webpack.prod.ts",
-    "dev": "cross-env NODE_ENV=development webpack serve --config ./webpack/webpack.dev.ts",
-    "prod": "npm run build:prod && cross-env NODE_ENV=production ts-node server/prod.ts",
-    "start": "cross-env NODE_ENV=production ts-node server/prod.ts",
-    "test": "jest --maxWorkers=8",
-    "test:update": "jest --maxWorkers=8 -u",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
-    "graphql:init": "graphql-codegen init",
-    "graphql:generate": "graphql-codegen --config codegen.yml"
   },
   "devDependencies": {
     "@babel/core": "^7.20.5",
@@ -93,5 +90,8 @@
     "webpack-cli": "^5.0.0",
     "webpack-dev-server": "^4.11.1",
     "webpack-merge": "^5.8.0"
+  },
+  "engines": {
+    "node": ">=16.18.0 <17"
   }
 }
