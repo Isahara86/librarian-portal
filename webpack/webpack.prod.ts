@@ -11,12 +11,6 @@ const config: webpack.Configuration = {
   mode: 'production',
   plugins: [
     // new BundleAnalyzerPlugin(),
-    new CompressionPlugin({
-      test: /\.js$/,
-      threshold: 10240,
-      filename: '[path][base]',
-      deleteOriginalAssets: true,
-    }),
   ],
   output: {
     filename: '[name].[contenthash].js',
