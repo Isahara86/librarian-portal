@@ -24,7 +24,7 @@ export type AppMenuItem = RawAppMenuItem & {
 
 export type TableState = {
   // base: SearchBaseInput,
-  offset?: Scalars['Int'],
-  limit?: Scalars['Int'],
+  offset?: InputMaybe<Scalars['Int']>,
+  limit?: InputMaybe<Scalars['Int']>,
   query?: InputMaybe<Scalars['String']>
 }

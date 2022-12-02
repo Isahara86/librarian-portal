@@ -285,7 +285,7 @@ const BaseTable = <DataObject extends object, Input extends TableState> ({
             total: totalRows,
             size: 'default',
             showTotal: total => `Total Rows ${total}`,
-            defaultPageSize: state.limit,
+            defaultPageSize: state.limit || 0,
             style: { marginBottom: 0 },
             position: ['bottomCenter'],
           } }
