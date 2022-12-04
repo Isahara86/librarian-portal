@@ -5,6 +5,10 @@ const menus = {
     title: 'Books',
     url: links.books,
   },
+  createBook: {
+    title: 'CreateBook',
+    url: links.createBook,
+  },
 };
 
 export type AppMenus = typeof menus;

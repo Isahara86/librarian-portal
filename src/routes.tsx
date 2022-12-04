@@ -15,6 +15,7 @@ import {
 } from '@apollo/client';
 import { userVar } from 'vars';
 import apolloClient from './utils/apollo';
+import CreateBook from './containers/CreateBook';
 
 export type RedirectLocation = {
   state: {
@@ -45,6 +46,10 @@ export const routes: AppRoutes = {
     books: {
       path: links.books,
       component: Books,
+    },
+    createBook: {
+      path: links.createBook,
+      component: CreateBook,
     },
   },
 };
