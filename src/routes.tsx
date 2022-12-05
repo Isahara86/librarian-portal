@@ -70,10 +70,7 @@ const PrivateRoute: FC<{ component: FC }> = ({ component: Component }) => {
   );
 };
 
-type PublicRoutes = typeof routes.public;
-type PrivateRoutes = typeof routes.private;
-
-const getPublicRoutes = (routes: PublicRoutes) => Object
+const getPublicRoutes = (routes: Record<string, RouteItem>) => Object
   .values(routes)
   .map(({ path, component: Component }) => (
     Component &&
@@ -84,10 +81,10 @@ const getPublicRoutes = (routes: PublicRoutes) => Object
     />
   ));
 
-const getPrivateRoutes = (routes: PrivateRoutes, parentPath = ''): JSX.Element[] => (
+const getPrivateRoutes = (routes: Record<string, RouteItem>, parentPath = ''): JSX.Element[] => (
   Object
     .values(routes)
-    .reduce<JSX.Element[]>((acc, { path, component, children }: any) => {
+    .reduce<JSX.Element[]>((acc, { path, component, children }) => {
       if (component) {
         acc.push(
           <Route
