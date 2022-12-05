@@ -103,6 +103,17 @@ const getPrivateRoutes = (routes: Record<string, RouteItem>, parentPath = ''): J
     }, [])
 );
 
+export const menus = {
+  books: {
+    title: 'Books',
+    url: routes.private.books.path,
+  },
+  createBook: {
+    title: 'CreateBook',
+    url: routes.private.createBook.path,
+  },
+};
+
 const AppRoutes: React.FC = () => (
   <BrowserRouter>
     <ApolloProvider client={ apolloClient }>

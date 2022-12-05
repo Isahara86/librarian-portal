@@ -15,10 +15,11 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import {
+  menus,
   RedirectLocation,
   routes,
 } from 'routes';
-import React, {
+import {
   FC,
   useEffect,
   useState,
@@ -26,7 +27,6 @@ import React, {
 import Text from 'antd/lib/typography/Text';
 import { useForm } from 'antd/lib/form/Form';
 import Cookies from 'js-cookie';
-import menus from 'menus';
 import {
   userVar,
   tokenVar,

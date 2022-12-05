@@ -1,9 +1,9 @@
 import { Menu } from 'antd';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
-import menus from 'menus';
 import { AppMenuItem } from 'types';
 import { FC } from 'react';
+import { menus } from 'routes';
 
 export const useSmallScreenQuery = () => useMediaQuery({ query: '(max-width: 768px)' });
 

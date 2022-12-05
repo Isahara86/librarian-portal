@@ -24,7 +24,6 @@
       "utils": ["src/utils"],
       "models": ["src/models"],
       "types": ["src/types"],
-      "menus": ["src/menus"],
       "vars": ["src/vars"],
       "images": ["src/images"],
     }

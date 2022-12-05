@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import { Typography } from 'antd';
-import menus from 'menus';
 import { BaseTable } from 'components';
 import {
   BookFragment, BookSearchInput, useBooksLazyQuery,
 } from 'codegen';
 import { useReactiveVar } from '@apollo/client';
 import { tableStateVar } from 'vars';
+import { menus } from 'routes';
 
 const stateVar = tableStateVar<BookSearchInput>();
 
