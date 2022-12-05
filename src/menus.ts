@@ -1,6 +1,5 @@
 import { routes } from 'routes';
 
-
 const menus = {
   books: {
     title: 'Books',

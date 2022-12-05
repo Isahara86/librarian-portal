@@ -8,11 +8,11 @@ export const ADMIN_LOGIN = gql`
      }
   }
 `;
-
-export const ADMIN_ME = gql`
-    query AdminMe {
-        adminMe {
-            name
-        }
-    }
-`;
+//
+// export const ADMIN_ME = gql`
+//     query AdminMe {
+//         adminMe {
+//             name
+//         }
+//     }
+// `;

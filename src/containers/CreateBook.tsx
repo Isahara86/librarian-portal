@@ -3,13 +3,15 @@ import {
 } from 'react';
 import {
   Button,
-  Col, Divider, Image, Row, Tabs, Typography, Upload, Form as AntdForm,
+  Col,
+  Divider,
+  Row,
 } from 'antd';
 import {
   BackButton, Form, renderFormFields,
 } from 'components';
 import {
-  BookFragment, BookSearchInput, useBooksLazyQuery,
+  BookSearchInput, useBooksLazyQuery,
 } from 'codegen';
 import { useReactiveVar } from '@apollo/client';
 import { tableStateVar } from 'vars';
@@ -22,8 +24,6 @@ import { routes } from 'routes';
 import BookImageUpload from './BookImageUpload';
 
 const stateVar = tableStateVar<BookSearchInput>();
-
-const { Text } = Typography;
 
 const columnHeight: CSSProperties['height'] = 'calc(100vh - 15rem)';
 

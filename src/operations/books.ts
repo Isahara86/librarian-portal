@@ -18,3 +18,12 @@ ${BOOK_FRAGMENT}
     }
   }
 `;
+
+export const CreateBook = gql`
+${BOOK_FRAGMENT}
+  mutation CreateBook($input: BookCreateInput!) {
+    createBook(input: $input) {
+      ...Book
+    }
+  }
+`;
