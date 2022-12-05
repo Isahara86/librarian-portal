@@ -1,10 +1,13 @@
-import { otp } from './input';
+import {
+  login, otp, password,
+} from './input';
 import { rememberMe } from './checkbox';
 import { phone } from './phone';
 
 export const authFields = {
   phone,
-  otp,
+  login,
+  password,
   rememberMe,
 };
 

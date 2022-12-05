@@ -28,6 +28,11 @@ export type AdminLoginResponse = {
   token: Scalars['String'];
 };
 
+export type AdminMeResponse = {
+  __typename?: 'AdminMeResponse';
+  name: Scalars['String'];
+};
+
 export type Author = {
   __typename?: 'Author';
   id: Scalars['Int'];
@@ -327,6 +332,7 @@ export type MutationUpdateCustomerArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  adminMe: AdminMeResponse;
   authors: Array<Author>;
   bookDetails: BookDetails;
   bookReservationHistory: Array<BookInventoryReservation>;
@@ -377,6 +383,18 @@ export type QueryCustomersArgs = {
   input: CustomersSearchInput;
 };
 
+export type AdminLoginMutationVariables = Exact<{
+  input: AdminLoginInput;
+}>;
+
+
+export type AdminLoginMutation = { __typename?: 'Mutation', adminLogin: { __typename?: 'AdminLoginResponse', name: string, token: string } };
+
+export type AdminMeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AdminMeQuery = { __typename?: 'Query', adminMe: { __typename?: 'AdminMeResponse', name: string } };
+
 export type BookFragment = { __typename?: 'Book', id: number, name: string, description?: string | null, previewUrl?: string | null, isAvailable: boolean };
 
 export type BooksQueryVariables = Exact<{
@@ -395,6 +413,74 @@ export const BookFragmentDoc = gql`
   isAvailable
 }
     `;
+export const AdminLoginDocument = gql`
+    mutation AdminLogin($input: AdminLoginInput!) {
+  adminLogin(input: $input) {
+    name
+    token
+  }
+}
+    `;
+export type AdminLoginMutationFn = Apollo.MutationFunction<AdminLoginMutation, AdminLoginMutationVariables>;
+
+/**
+ * __useAdminLoginMutation__
+ *
+ * To run a mutation, you first call `useAdminLoginMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAdminLoginMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [adminLoginMutation, { data, loading, error }] = useAdminLoginMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useAdminLoginMutation(baseOptions?: Apollo.MutationHookOptions<AdminLoginMutation, AdminLoginMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AdminLoginMutation, AdminLoginMutationVariables>(AdminLoginDocument, options);
+      }
+export type AdminLoginMutationHookResult = ReturnType<typeof useAdminLoginMutation>;
+export type AdminLoginMutationResult = Apollo.MutationResult<AdminLoginMutation>;
+export type AdminLoginMutationOptions = Apollo.BaseMutationOptions<AdminLoginMutation, AdminLoginMutationVariables>;
+export const AdminMeDocument = gql`
+    query AdminMe {
+  adminMe {
+    name
+  }
+}
+    `;
+
+/**
+ * __useAdminMeQuery__
+ *
+ * To run a query within a React component, call `useAdminMeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAdminMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAdminMeQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAdminMeQuery(baseOptions?: Apollo.QueryHookOptions<AdminMeQuery, AdminMeQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AdminMeQuery, AdminMeQueryVariables>(AdminMeDocument, options);
+      }
+export function useAdminMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AdminMeQuery, AdminMeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AdminMeQuery, AdminMeQueryVariables>(AdminMeDocument, options);
+        }
+export type AdminMeQueryHookResult = ReturnType<typeof useAdminMeQuery>;
+export type AdminMeLazyQueryHookResult = ReturnType<typeof useAdminMeLazyQuery>;
+export type AdminMeQueryResult = Apollo.QueryResult<AdminMeQuery, AdminMeQueryVariables>;
 export const BooksDocument = gql`
     query Books($input: BookSearchInput!) {
   books(input: $input) {

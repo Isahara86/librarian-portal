@@ -7,6 +7,7 @@ import {
 import {
   CoreLayout,
   Books,
+  SignIn,
 } from 'containers';
 import links from 'links';
 import {
@@ -35,16 +36,17 @@ type AppRoutes = {
 
 export const routes: AppRoutes = {
   public: {
-    // signIn: {
-    //   path: links.signIn,
-    //   component: SignInPage,
-    // },
+    signIn: {
+      path: links.signIn,
+      component: SignIn,
+    },
+  },
+  private: {
     books: {
       path: links.books,
       component: Books,
     },
   },
-  private: { },
 };
 
 const PrivateRoute: FC<{ component: FC }> = ({ component: Component }) => {
@@ -106,7 +108,7 @@ const AppRoutes: React.FC = () => (
         <Routes>
           { getPublicRoutes(routes.public) }
           { getPrivateRoutes(routes.private) }
-          { /* <Route path="*" element={ <SignInPage /> } /> */ }
+          <Route path="*" element={ <SignIn /> } />
         </Routes>
       </CoreLayout>
     </ApolloProvider>

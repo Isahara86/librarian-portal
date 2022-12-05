@@ -1,1 +1,4 @@
-export default { books: '/books' };
+export default {
+  signIn: '/sign-in',
+  books: '/books',
+};

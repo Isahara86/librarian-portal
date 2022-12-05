@@ -2,8 +2,7 @@ import { makeVar } from '@apollo/client';
 import { NamePath } from 'antd/lib/form/interface';
 import { TableState } from 'types';
 
-// TODO change any to User type
-export const userVar = makeVar<any | null>({});
+export const userVar = makeVar<{ name: string } | null>(null);
 export const tokenVar = makeVar<string | null>(null);
 export const changedFieldsNamesVar = makeVar<NamePath[]>([]);
 

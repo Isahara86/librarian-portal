@@ -8,6 +8,10 @@ type AdminLoginResponse {
   token: String!
 }
 
+type AdminMeResponse {
+  name: String!
+}
+
 type Author {
   id: Int!
   name: String!
@@ -252,6 +256,7 @@ type Mutation {
 }
 
 type Query {
+  adminMe: AdminMeResponse!
   authors(input: AuthorSearchInput!): [Author!]!
   bookDetails(id: Int!): BookDetails!
   bookReservationHistory(input: BookInventoryReservationSearchInput!): [BookInventoryReservation!]!

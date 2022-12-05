@@ -1,4 +1,6 @@
-import { MailOutlined } from '@ant-design/icons';
+import {
+  LockOutlined, MailOutlined,
+} from '@ant-design/icons';
 import {
   FormComponentType,
   FormInput,
@@ -16,7 +18,9 @@ import {
 } from 'types';
 import { Rule } from 'antd/lib/form';
 import { parsePhoneNumber } from 'libphonenumber-js';
-import { InputProps } from 'antd';
+import {
+  FormItemProps, InputProps,
+} from 'antd';
 
 // rules
 export const isPhoneValidRule = {
@@ -90,6 +94,19 @@ const getEmailField = ({
   },
 });
 
+const getPasswordField = ({ placeholder }: FormItemProps & InputProps) => getInputField({
+  formItemProps: {
+    name: 'password',
+    normalize: value => value.trim(),
+    rules: [requiredRule],
+  },
+  componentProps: {
+    placeholder,
+    prefix: <LockOutlined />,
+    type: FormComponentType.PASSWORD,
+  },
+});
+
 const getTextAreaField = getField<FormTextArea>(FormComponentType.TEXTAREA);
 
 const getRadioButtonGroupField = getField<FormRadioButtonGroup>(FormComponentType.RADIOBUTTONGROUP);
@@ -111,6 +128,7 @@ const getUpload = getField<FormUpload>(FormComponentType.UPLOAD);
 export {
   requiredRule,
   getEmailField,
+  getPasswordField,
   getInputField,
   getNumberField,
   getRadioButtonGroupField,

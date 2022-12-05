@@ -1,5 +1,7 @@
 import { InputProps } from 'antd';
-import { getInputField } from './formFieldsUtils';
+import {
+  getInputField, getPasswordField,
+} from './formFieldsUtils';
 
 // eslint-disable-next-line import/prefer-default-export
 export const otp = ({ disabled }: InputProps) => getInputField({
@@ -12,3 +14,13 @@ export const otp = ({ disabled }: InputProps) => getInputField({
     required: true,
   },
 });
+
+export const login = getInputField({
+  componentProps: { placeholder: 'Login' },
+  formItemProps: {
+    name: 'login',
+    required: true,
+  },
+});
+
+export const password = getPasswordField({ placeholder: 'Password' });
