@@ -19,7 +19,6 @@ const config: webpack.Configuration = {
       config: path.resolve(ROOT_PATH, './src/config'),
       styles: path.resolve(ROOT_PATH, './src/styles'),
       types: path.resolve(ROOT_PATH, './src/types'),
-      links: path.resolve(ROOT_PATH, './src/links'),
       menus: path.resolve(ROOT_PATH, './src/menus'),
       vars: path.resolve(ROOT_PATH, './src/vars'),
       images: path.resolve(ROOT_PATH, './src/images'),
