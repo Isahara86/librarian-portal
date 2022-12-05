@@ -96,7 +96,7 @@ const SignInPage: FC = () => {
 
   if (user) {
     return (
-      <Navigate to={ location?.state?.redirectFrom || routes.private.incidents.path } />
+      <Navigate to={ location?.state?.redirectFrom || routes.private.books.path } />
     );
   }
 

@@ -25,7 +25,6 @@
       "models": ["src/models"],
       "types": ["src/types"],
       "menus": ["src/menus"],
-      "links": ["src/links"],
       "vars": ["src/vars"],
       "images": ["src/images"],
     }

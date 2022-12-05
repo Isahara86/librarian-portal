@@ -9,12 +9,12 @@ import {
   Books,
   SignIn,
 } from 'containers';
-import links from 'links';
 import {
   ApolloProvider, useReactiveVar,
 } from '@apollo/client';
 import { userVar } from 'vars';
 import apolloClient from './utils/apollo';
+// eslint-disable-next-line import/no-cycle
 import CreateBook from './containers/CreateBook';
 
 export type RedirectLocation = {
@@ -23,36 +23,36 @@ export type RedirectLocation = {
   }
 }
 
-type RouteItem = {
+interface RouteItem {
   path: string,
   component?: FC,
   children?: Record<string, RouteItem>
   title?: string
 }
 
-type AppRoutes = {
+interface AppRoutes {
   public: Record<string, RouteItem>,
   private: Record<string, RouteItem>
 }
 
-export const routes: AppRoutes = {
+export const routes = {
   public: {
     signIn: {
-      path: links.signIn,
+      path: '/sign-in',
       component: SignIn,
     },
   },
   private: {
     books: {
-      path: links.books,
+      path: '/books',
       component: Books,
     },
     createBook: {
-      path: links.createBook,
+      path: '/create-book',
       component: CreateBook,
     },
   },
-};
+} satisfies AppRoutes;
 
 const PrivateRoute: FC<{ component: FC }> = ({ component: Component }) => {
   const redirectFrom = `${window.location.pathname}${window.location.search}`;
@@ -87,7 +87,7 @@ const getPublicRoutes = (routes: PublicRoutes) => Object
 const getPrivateRoutes = (routes: PrivateRoutes, parentPath = ''): JSX.Element[] => (
   Object
     .values(routes)
-    .reduce<JSX.Element[]>((acc, { path, component, children }) => {
+    .reduce<JSX.Element[]>((acc, { path, component, children }: any) => {
       if (component) {
         acc.push(
           <Route

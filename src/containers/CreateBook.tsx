@@ -14,10 +14,11 @@ import {
 import { useReactiveVar } from '@apollo/client';
 import { tableStateVar } from 'vars';
 import { useForm } from 'antd/lib/form/Form';
-import links from 'links';
 import { createPortal } from 'react-dom';
 import { usePortal } from 'hooks';
 import { getInputField } from 'utils';
+// eslint-disable-next-line import/no-cycle
+import { routes } from 'routes';
 import BookImageUpload from './BookImageUpload';
 
 const stateVar = tableStateVar<BookSearchInput>();
@@ -46,7 +47,7 @@ const CreateBook: FC = () => {
         align="middle"
       >
         <Col>
-          <BackButton to={ links.books } />
+          <BackButton to={ routes.private.books.path } />
         </Col>
         <Col id="productButtonContainer" />
       </Row>
