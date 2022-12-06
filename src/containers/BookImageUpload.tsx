@@ -3,12 +3,17 @@ import {
   LoadingOutlined, PlusOutlined,
 } from '@ant-design/icons';
 import {
-  message, Upload,
+  message,
+  Upload,
+  Form,
 } from 'antd';
 import type { UploadChangeParam } from 'antd/es/upload';
 import type {
   RcFile, UploadFile, UploadProps,
 } from 'antd/es/upload/interface';
+import { FormInstance } from 'antd/lib/form';
+
+const { useFormInstance } = Form;
 
 const getBase64 = (img: RcFile, callback: (url: string) => void) => {
   const reader = new FileReader();
@@ -26,10 +31,15 @@ const beforeUpload = (file: RcFile) => {
     message.error('Image must smaller than 2MB!');
   }
 
-  return isJpgOrPng && isLt2M;
+  // return isJpgOrPng && isLt2M;
+  return false;
 };
 
-const BookImageUpload: React.FC = () => {
+interface Props {
+  form: FormInstance;
+}
+
+const BookImageUpload: React.FC<Props> = ({ form }) => {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>();
 
@@ -60,6 +70,7 @@ const BookImageUpload: React.FC = () => {
 
       setLoading(false);
       setImageUrl(src);
+      form.setFieldValue('previewImage', info.file);
     }
   };
 
@@ -76,7 +87,6 @@ const BookImageUpload: React.FC = () => {
       listType="picture-card"
       className="avatar-uploader"
       showUploadList={ false }
-      action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
       beforeUpload={ beforeUpload }
       onChange={ handleChange }
     >

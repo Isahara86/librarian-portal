@@ -11,7 +11,7 @@ import {
   BackButton, Form, renderFormFields,
 } from 'components';
 import {
-  BookSearchInput, useBooksLazyQuery,
+  BookSearchInput, useBooksLazyQuery, useCreateBookMutation,
 } from 'codegen';
 import { useReactiveVar } from '@apollo/client';
 import { tableStateVar } from 'vars';
@@ -23,18 +23,43 @@ import { getInputField } from 'utils';
 import { routes } from 'routes';
 import BookImageUpload from './BookImageUpload';
 
-const stateVar = tableStateVar<BookSearchInput>();
+// const stateVar = tableStateVar<BookSearchInput>();
 
 const columnHeight: CSSProperties['height'] = 'calc(100vh - 15rem)';
 
 const CreateBook: FC = () => {
   const portalTarget = usePortal('productButtonContainer');
   const [form] = useForm();
-  const [query, { loading, data }] = useBooksLazyQuery();
+  // const [query, { loading, data }] = useBooksLazyQuery();
+  const [createBook, createBookResult] = useCreateBookMutation();
 
-  const state = useReactiveVar(stateVar);
+  // const state = useReactiveVar(stateVar);
 
-  const onSubmit = (...args: any[]) => console.log('Form submit 113', args);
+  const onSubmit = async (...args: any) => {
+    const upload = form.getFieldValue('previewImage');
+    await createBook({
+      variables: {
+        input: {
+          name: args[0].name,
+          description: args[0].description,
+          authorIds: [],
+          categoryIds: [],
+          inventories: [],
+          preview: upload,
+        },
+      },
+    });
+
+    console.log({
+      name: args[0].name,
+      description: args[0].description,
+      authorIds: [],
+      categoryIds: [],
+      inventories: [],
+      preview: upload,
+    });
+    // console.log('Form submit 113', args, form.getFieldValue('previewImage'));
+  };
 
   const isNewBook = true;
   const isLoading = false;
@@ -120,7 +145,7 @@ const CreateBook: FC = () => {
               //   { /* <AntdForm.ErrorList errors={ errors } /> */ }
               // </Upload>,
               // eslint-disable-next-line react/jsx-key
-              <BookImageUpload />,
+              <BookImageUpload form={ form } />,
             ]) }
           </Col>
         </Row>
