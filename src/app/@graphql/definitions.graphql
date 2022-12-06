@@ -7,3 +7,11 @@ query booksList ($input: BookSearchInput!) {
     }
   }
 }
+
+
+mutation adminLogin($input: AdminLoginInput!) {
+  adminLogin(input: $input) {
+    name
+    token
+  }
+}

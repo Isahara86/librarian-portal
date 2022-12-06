@@ -373,6 +373,13 @@ export type BooksListQueryVariables = Exact<{
 
 export type BooksListQuery = { readonly books: ReadonlyArray<{ readonly name: string, readonly previewUrl?: string | null, readonly authors: ReadonlyArray<{ readonly name: string }> }> };
 
+export type AdminLoginMutationVariables = Exact<{
+  input: AdminLoginInput;
+}>;
+
+
+export type AdminLoginMutation = { readonly adminLogin: { readonly name: string, readonly token: string } };
+
 export const BooksListDocument = gql`
     query booksList($input: BookSearchInput!) {
   books(input: $input) {
@@ -390,6 +397,25 @@ export const BooksListDocument = gql`
   })
   export class BooksListGQL extends Apollo.Query<BooksListQuery, BooksListQueryVariables> {
     override document = BooksListDocument;
+
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const AdminLoginDocument = gql`
+    mutation adminLogin($input: AdminLoginInput!) {
+  adminLogin(input: $input) {
+    name
+    token
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class AdminLoginGQL extends Apollo.Mutation<AdminLoginMutation, AdminLoginMutationVariables> {
+    override document = AdminLoginDocument;
 
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
