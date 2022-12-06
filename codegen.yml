@@ -11,7 +11,7 @@ generates:
     config:
       flattenGeneratedTypes: false
       exportFragmentSpreadSubTypes: true
-      avoidOptionals: true
+      avoidOptionals: false
       skipTypename: true
       immutableTypes: true
       preResolveTypes: true

@@ -39,9 +39,9 @@ export type AuthorCreateInput = {
 };
 
 export type AuthorSearchInput = {
-  readonly limit: InputMaybe<Scalars['Int']>;
-  readonly offset: InputMaybe<Scalars['Int']>;
-  readonly query: InputMaybe<Scalars['String']>;
+  readonly limit?: InputMaybe<Scalars['Int']>;
+  readonly offset?: InputMaybe<Scalars['Int']>;
+  readonly query?: InputMaybe<Scalars['String']>;
 };
 
 export type AuthorUpdateInput = {
@@ -52,37 +52,37 @@ export type AuthorUpdateInput = {
 export type Book = {
   readonly authors: ReadonlyArray<Author>;
   readonly categories: ReadonlyArray<Category>;
-  readonly description: Maybe<Scalars['String']>;
+  readonly description?: Maybe<Scalars['String']>;
   readonly id: Scalars['Int'];
   readonly isAvailable: Scalars['Boolean'];
   readonly name: Scalars['String'];
-  readonly previewUrl: Maybe<Scalars['String']>;
+  readonly previewUrl?: Maybe<Scalars['String']>;
 };
 
 export type BookCreateInput = {
   readonly authorIds: ReadonlyArray<Scalars['Int']>;
   readonly categoryIds: ReadonlyArray<Scalars['Int']>;
-  readonly description: InputMaybe<Scalars['String']>;
+  readonly description?: InputMaybe<Scalars['String']>;
   readonly inventories: ReadonlyArray<BookInventoryCreateInput>;
   readonly name: Scalars['String'];
   /** When not set previous value will be used */
-  readonly preview: InputMaybe<Scalars['Upload']>;
+  readonly preview?: InputMaybe<Scalars['Upload']>;
 };
 
 export type BookDetails = {
   readonly authors: ReadonlyArray<Author>;
   readonly categories: ReadonlyArray<Category>;
-  readonly description: Maybe<Scalars['String']>;
+  readonly description?: Maybe<Scalars['String']>;
   readonly id: Scalars['Int'];
   readonly inventories: ReadonlyArray<BookInventoryDetails>;
   readonly isAvailable: Scalars['Boolean'];
   readonly name: Scalars['String'];
-  readonly previewUrl: Maybe<Scalars['String']>;
+  readonly previewUrl?: Maybe<Scalars['String']>;
 };
 
 export type BookInventory = {
   readonly book: Book;
-  readonly deleteReason: Maybe<Scalars['String']>;
+  readonly deleteReason?: Maybe<Scalars['String']>;
   readonly id: Scalars['Int'];
   readonly serialNumber: Scalars['String'];
 };
@@ -92,24 +92,24 @@ export type BookInventoryCreateInput = {
 };
 
 export type BookInventoryDetails = {
-  readonly activeReservation: Maybe<BookInventoryReservation>;
-  readonly deleteReason: Maybe<Scalars['String']>;
+  readonly activeReservation?: Maybe<BookInventoryReservation>;
+  readonly deleteReason?: Maybe<Scalars['String']>;
   readonly id: Scalars['Int'];
   readonly serialNumber: Scalars['String'];
 };
 
 export type BookInventoryReservation = {
   /** milliseconds */
-  readonly createdAt: Maybe<Scalars['Timestamp']>;
+  readonly createdAt?: Maybe<Scalars['Timestamp']>;
   readonly customer: Customer;
-  readonly description: Maybe<Scalars['String']>;
+  readonly description?: Maybe<Scalars['String']>;
   /** milliseconds */
-  readonly endAt: Maybe<Scalars['Timestamp']>;
+  readonly endAt?: Maybe<Scalars['Timestamp']>;
   readonly id: Scalars['Int'];
   /** milliseconds */
-  readonly returnedAt: Maybe<Scalars['Timestamp']>;
+  readonly returnedAt?: Maybe<Scalars['Timestamp']>;
   /** milliseconds */
-  readonly startAt: Maybe<Scalars['Timestamp']>;
+  readonly startAt?: Maybe<Scalars['Timestamp']>;
 };
 
 export type BookInventoryReservationCreateInput = {
@@ -122,9 +122,9 @@ export type BookInventoryReservationCreateInput = {
 
 export type BookInventoryReservationSearchInput = {
   readonly bookId: Scalars['Int'];
-  readonly inventoryId: InputMaybe<Scalars['Int']>;
-  readonly limit: InputMaybe<Scalars['Int']>;
-  readonly offset: InputMaybe<Scalars['Int']>;
+  readonly inventoryId?: InputMaybe<Scalars['Int']>;
+  readonly limit?: InputMaybe<Scalars['Int']>;
+  readonly offset?: InputMaybe<Scalars['Int']>;
 };
 
 export type BookInventoryReservationUpdateInput = {
@@ -133,7 +133,7 @@ export type BookInventoryReservationUpdateInput = {
   readonly description: Scalars['String'];
   readonly endAt: Scalars['Timestamp'];
   readonly id: Scalars['Int'];
-  readonly returnedAt: InputMaybe<Scalars['Timestamp']>;
+  readonly returnedAt?: InputMaybe<Scalars['Timestamp']>;
   readonly startAt: Scalars['Timestamp'];
 };
 
@@ -144,23 +144,23 @@ export type BookInventoryUpdateInput = {
 };
 
 export type BookSearchInput = {
-  readonly authorIds: InputMaybe<ReadonlyArray<Scalars['Int']>>;
-  readonly categoryIds: InputMaybe<ReadonlyArray<Scalars['Int']>>;
-  readonly limit: InputMaybe<Scalars['Int']>;
-  readonly offset: InputMaybe<Scalars['Int']>;
+  readonly authorIds?: InputMaybe<ReadonlyArray<Scalars['Int']>>;
+  readonly categoryIds?: InputMaybe<ReadonlyArray<Scalars['Int']>>;
+  readonly limit?: InputMaybe<Scalars['Int']>;
+  readonly offset?: InputMaybe<Scalars['Int']>;
   /** search by name, description */
-  readonly query: InputMaybe<Scalars['String']>;
+  readonly query?: InputMaybe<Scalars['String']>;
 };
 
 export type BookUpdateInput = {
   readonly authorIds: ReadonlyArray<Scalars['Int']>;
   readonly categoryIds: ReadonlyArray<Scalars['Int']>;
-  readonly description: InputMaybe<Scalars['String']>;
+  readonly description?: InputMaybe<Scalars['String']>;
   readonly id: Scalars['Int'];
   readonly name: Scalars['String'];
   readonly newInventories: ReadonlyArray<BookInventoryCreateInput>;
   /** When not set previous value will be used */
-  readonly preview: InputMaybe<Scalars['Upload']>;
+  readonly preview?: InputMaybe<Scalars['Upload']>;
   readonly updatedInventories: ReadonlyArray<BookInventoryUpdateInput>;
 };
 
@@ -174,9 +174,9 @@ export type CategoryCreateInput = {
 };
 
 export type CategorySearchInput = {
-  readonly limit: InputMaybe<Scalars['Int']>;
-  readonly offset: InputMaybe<Scalars['Int']>;
-  readonly query: InputMaybe<Scalars['String']>;
+  readonly limit?: InputMaybe<Scalars['Int']>;
+  readonly offset?: InputMaybe<Scalars['Int']>;
+  readonly query?: InputMaybe<Scalars['String']>;
 };
 
 export type CategoryUpdateInput = {
@@ -186,64 +186,64 @@ export type CategoryUpdateInput = {
 
 /** customer  */
 export type Customer = {
-  readonly description: Maybe<Scalars['String']>;
-  readonly email: Maybe<Scalars['String']>;
+  readonly description?: Maybe<Scalars['String']>;
+  readonly email?: Maybe<Scalars['String']>;
   readonly id: Scalars['Int'];
   /** Customer nick name */
   readonly name: Scalars['String'];
-  readonly phone: Maybe<Scalars['String']>;
+  readonly phone?: Maybe<Scalars['String']>;
 };
 
 export type CustomerCreateInput = {
-  readonly description: InputMaybe<Scalars['String']>;
-  readonly email: InputMaybe<Scalars['String']>;
+  readonly description?: InputMaybe<Scalars['String']>;
+  readonly email?: InputMaybe<Scalars['String']>;
   readonly name: Scalars['String'];
-  readonly phone: InputMaybe<Scalars['String']>;
+  readonly phone?: InputMaybe<Scalars['String']>;
 };
 
 /** customer  */
 export type CustomerDetails = {
   readonly activeReservations: ReadonlyArray<CustomerDetailsReservation>;
-  readonly description: Maybe<Scalars['String']>;
-  readonly email: Maybe<Scalars['String']>;
+  readonly description?: Maybe<Scalars['String']>;
+  readonly email?: Maybe<Scalars['String']>;
   readonly id: Scalars['Int'];
   /** Customer nick name */
   readonly name: Scalars['String'];
-  readonly phone: Maybe<Scalars['String']>;
+  readonly phone?: Maybe<Scalars['String']>;
 };
 
 export type CustomerDetailsReservation = {
   readonly bookInventory: BookInventory;
   /** milliseconds */
-  readonly createdAt: Maybe<Scalars['Timestamp']>;
-  readonly description: Maybe<Scalars['String']>;
+  readonly createdAt?: Maybe<Scalars['Timestamp']>;
+  readonly description?: Maybe<Scalars['String']>;
   /** milliseconds */
-  readonly endAt: Maybe<Scalars['Timestamp']>;
+  readonly endAt?: Maybe<Scalars['Timestamp']>;
   readonly id: Scalars['Int'];
   /** milliseconds */
-  readonly returnedAt: Maybe<Scalars['Timestamp']>;
+  readonly returnedAt?: Maybe<Scalars['Timestamp']>;
   /** milliseconds */
-  readonly startAt: Maybe<Scalars['Timestamp']>;
+  readonly startAt?: Maybe<Scalars['Timestamp']>;
 };
 
 export type CustomerReservationsSearchInput = {
   readonly customerId: Scalars['Int'];
-  readonly limit: InputMaybe<Scalars['Int']>;
-  readonly offset: InputMaybe<Scalars['Int']>;
+  readonly limit?: InputMaybe<Scalars['Int']>;
+  readonly offset?: InputMaybe<Scalars['Int']>;
 };
 
 export type CustomerUpdateInput = {
-  readonly description: InputMaybe<Scalars['String']>;
-  readonly email: InputMaybe<Scalars['String']>;
+  readonly description?: InputMaybe<Scalars['String']>;
+  readonly email?: InputMaybe<Scalars['String']>;
   readonly id: Scalars['Int'];
   readonly name: Scalars['String'];
-  readonly phone: InputMaybe<Scalars['String']>;
+  readonly phone?: InputMaybe<Scalars['String']>;
 };
 
 export type CustomersSearchInput = {
-  readonly limit: InputMaybe<Scalars['Int']>;
-  readonly offset: InputMaybe<Scalars['Int']>;
-  readonly query: InputMaybe<Scalars['String']>;
+  readonly limit?: InputMaybe<Scalars['Int']>;
+  readonly offset?: InputMaybe<Scalars['Int']>;
+  readonly query?: InputMaybe<Scalars['String']>;
 };
 
 export type Mutation = {
@@ -371,7 +371,7 @@ export type BooksListQueryVariables = Exact<{
 }>;
 
 
-export type BooksListQuery = { readonly books: ReadonlyArray<{ readonly name: string, readonly previewUrl: string | null, readonly authors: ReadonlyArray<{ readonly name: string }> }> };
+export type BooksListQuery = { readonly books: ReadonlyArray<{ readonly name: string, readonly previewUrl?: string | null, readonly authors: ReadonlyArray<{ readonly name: string }> }> };
 
 export const BooksListDocument = gql`
     query booksList($input: BookSearchInput!) {

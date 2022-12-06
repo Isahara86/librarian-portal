@@ -16,7 +16,7 @@ export class GraphQlService {
   }
 
   public findBooks() {
-    return this.books.fetch({input: {offset: 0, limit: 10, query: null, authorIds: null, categoryIds: null}});
+    return this.books.fetch({input: {offset: 0, limit: 10}});
   }
 
 

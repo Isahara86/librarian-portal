@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
-import { ApolloLink, DefaultOptions, InMemoryCache } from '@apollo/client/core';
+import { ApolloClientOptions, ApolloLink, DefaultOptions, InMemoryCache } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
 import { setContext } from '@apollo/client/link/context';
 
@@ -12,7 +12,7 @@ import { setContext } from '@apollo/client/link/context';
 
 const uri = 'http://localhost:11300/graphql';
 
-export function createApolloWithToken(httpLink: HttpLink, token: string) {
+export function createApolloWithToken(httpLink: HttpLink, token: string): ApolloClientOptions<any>  {
   const basic = setContext((operation, context) => ({
     headers: {
       Accept: 'charset=utf-8'
@@ -76,7 +76,7 @@ export function createApolloWithToken(httpLink: HttpLink, token: string) {
   }
 }
 
-function createApollo(httpLink: HttpLink) {
+function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   const basic = setContext((operation, context) => ({
     headers: {
       Accept: 'charset=utf-8'
