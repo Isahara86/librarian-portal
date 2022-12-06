@@ -22,7 +22,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 const authLink = setContext((_, { headers }) => ({
   headers: {
     ...headers,
-    authorization: tokenVar(),
+    authorization: `Bearer ${tokenVar()}`,
   },
 }));
 
