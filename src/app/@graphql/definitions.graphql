@@ -1,0 +1,9 @@
+query booksList ($input: BookSearchInput!) {
+  books(input: $input) {
+    name
+    previewUrl
+    authors {
+      name
+    }
+  }
+}
