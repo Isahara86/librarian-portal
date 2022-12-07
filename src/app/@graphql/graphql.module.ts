@@ -5,6 +5,10 @@ import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
 import { ApolloClientOptions, ApolloLink, DefaultOptions, InMemoryCache } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
 import { setContext } from '@apollo/client/link/context';
+// @ts-ignore
+import extractFiles from 'extract-files/extractFiles.mjs';
+// @ts-ignore
+import isExtractableFile from 'extract-files/isExtractableFile.mjs';
 
 // import { environment } from 'src/environments/environment';
 // import { WebSocketLink } from '@apollo/client/link/ws';
@@ -55,7 +59,7 @@ export function createApolloWithToken(httpLink: HttpLink, token: string): Apollo
   //   };
   // });
 
-  const link = ApolloLink.from([basic, auth, httpLink.create({ uri })]);
+  const link = ApolloLink.from([basic, auth, httpLink.create({ uri, extractFiles: (body) => extractFiles(body, isExtractableFile), })]);
   const cache = new InMemoryCache();
 
   const defaultOptions: DefaultOptions = {
@@ -119,7 +123,7 @@ function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   //   };
   // });
 
-  const link = ApolloLink.from([basic, auth, httpLink.create({ uri })]);
+  const link = ApolloLink.from([basic, auth, httpLink.create({ uri, extractFiles: (body) => extractFiles(body, isExtractableFile), })]);
   const cache = new InMemoryCache();
 
   const defaultOptions: DefaultOptions = {
@@ -141,7 +145,11 @@ function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
 }
 
 @NgModule({
-  imports: [ApolloModule, CommonModule, HttpClientModule],
+  imports: [
+    CommonModule,
+    HttpClientModule,
+    ApolloModule,
+  ],
   providers: [{
     provide: APOLLO_OPTIONS,
     useFactory: createApollo,

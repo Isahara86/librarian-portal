@@ -1,6 +1,7 @@
 import { gql } from 'apollo-angular';
 import { Injectable } from '@angular/core';
 import * as Apollo from 'apollo-angular';
+
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -371,7 +372,7 @@ export type BooksListQueryVariables = Exact<{
 }>;
 
 
-export type BooksListQuery = { readonly books: ReadonlyArray<{ readonly name: string, readonly previewUrl?: string | null, readonly authors: ReadonlyArray<{ readonly name: string }> }> };
+export type BooksListQuery = { readonly books: ReadonlyArray<{ readonly name: string, readonly previewUrl?: string | null, readonly description?: string | null, readonly isAvailable: boolean }> };
 
 export type AdminLoginMutationVariables = Exact<{
   input: AdminLoginInput;
@@ -380,44 +381,70 @@ export type AdminLoginMutationVariables = Exact<{
 
 export type AdminLoginMutation = { readonly adminLogin: { readonly name: string, readonly token: string } };
 
+export type CreateBookMutationVariables = Exact<{
+  input: BookCreateInput;
+}>;
+
+
+export type CreateBookMutation = { readonly createBook: { readonly id: number } };
+
 export const BooksListDocument = gql`
-    query booksList($input: BookSearchInput!) {
-  books(input: $input) {
-    name
-    previewUrl
-    authors {
+  query booksList($input: BookSearchInput!) {
+    books(input: $input) {
       name
+      previewUrl
+      description
+      isAvailable
     }
+  }
+`;
+
+@Injectable({
+  providedIn: 'root'
+})
+export class BooksListGQL extends Apollo.Query<BooksListQuery, BooksListQueryVariables> {
+  override document = BooksListDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
 }
-    `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class BooksListGQL extends Apollo.Query<BooksListQuery, BooksListQueryVariables> {
-    override document = BooksListDocument;
-
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
 export const AdminLoginDocument = gql`
-    mutation adminLogin($input: AdminLoginInput!) {
-  adminLogin(input: $input) {
-    name
-    token
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class AdminLoginGQL extends Apollo.Mutation<AdminLoginMutation, AdminLoginMutationVariables> {
-    override document = AdminLoginDocument;
-
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
+  mutation adminLogin($input: AdminLoginInput!) {
+    adminLogin(input: $input) {
+      name
+      token
     }
   }
+`;
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AdminLoginGQL extends Apollo.Mutation<AdminLoginMutation, AdminLoginMutationVariables> {
+  override document = AdminLoginDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+
+export const CreateBookDocument = gql`
+  mutation createBook($input: BookCreateInput!) {
+    createBook(input: $input) {
+      id
+    }
+  }
+`;
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CreateBookGQL extends Apollo.Mutation<CreateBookMutation, CreateBookMutationVariables> {
+  override document = CreateBookDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}

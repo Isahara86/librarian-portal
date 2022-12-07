@@ -2,9 +2,8 @@ query booksList ($input: BookSearchInput!) {
   books(input: $input) {
     name
     previewUrl
-    authors {
-      name
-    }
+    description
+    isAvailable
   }
 }
 
@@ -13,5 +12,11 @@ mutation adminLogin($input: AdminLoginInput!) {
   adminLogin(input: $input) {
     name
     token
+  }
+}
+
+mutation createBook($input: BookCreateInput!){
+  createBook(input: $input) {
+    id
   }
 }

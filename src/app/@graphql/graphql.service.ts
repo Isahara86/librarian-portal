@@ -22,21 +22,5 @@ export class GraphQlService {
   ) {
   }
 
-  public findBooks() {
-    return this.books.fetch({input: {offset: 0, limit: 10}});
-  }
-
-  public async adminLogin(variables: AdminLoginMutationVariables) {
-    const res = await this.adminLoginGQL.mutate(variables).toPromise();
-
-    const token = res?.data?.adminLogin.token;
-    if (!token) {
-      throw new Error();
-    }
-
-    await this.apollo.removeClient();
-    await this.apollo.create(createApolloWithToken(this.httpLink, token));
-  }
-
 
 }
