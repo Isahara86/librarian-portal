@@ -1,20 +1,12 @@
-import { Component, ViewChild } from '@angular/core';
-import { ReplaySubject, Subject, take, takeUntil } from 'rxjs';
+import { Component, Input, ViewChild } from '@angular/core';
+import { BehaviorSubject, ReplaySubject, Subject, take, takeUntil } from 'rxjs';
 import { UntypedFormControl } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
 
-export interface Car {
+export interface MultiselectItem {
   id: string;
   name: string;
 }
-
-/** list of cars */
-export const CARS: Car[] = [
-  { name: 'Mercedes-Benz', id: 'A' },
-  { name: 'Tesla', id: 'B' },
-  { name: 'BMW', id: 'C' },
-  { name: '	Volvo', id: 'D' },
-];
 
 
 @Component({
@@ -24,18 +16,21 @@ export const CARS: Car[] = [
 })
 export class MultiSelectComponent {
 
-  protected cars: Car[] = CARS;
+  @Input() availableItemsInput!: BehaviorSubject<MultiselectItem[]>;
+  @Input() placeholder?: string;
+  @Input() showSelectedValues = false;
+  availableItems: MultiselectItem[] = [];
 
   /** control for the selected car */
-  public carCtrl: UntypedFormControl = new UntypedFormControl();
+  public itemCtrl: UntypedFormControl = new UntypedFormControl();
 
   /** control for the MatSelect filter keyword */
-  public carFilterCtrl: UntypedFormControl = new UntypedFormControl();
+  public itemFilterCtrl: UntypedFormControl = new UntypedFormControl();
 
   /** list of cars filtered by search keyword */
-  public filteredCars: ReplaySubject<Car[]> = new ReplaySubject<Car[]>(1);
+  public filteredItems: ReplaySubject<MultiselectItem[]> = new ReplaySubject<MultiselectItem[]>(1);
 
-  @ViewChild('singleSelect', { static: true })
+  @ViewChild('singleSelect', {static: true})
   singleSelect!: MatSelect;
 
   /** Subject that emits when the component has been destroyed. */
@@ -45,20 +40,27 @@ export class MultiSelectComponent {
   isIndeterminate = false;
   isChecked = false;
 
-  constructor() {}
+  constructor() {
+  }
 
   ngOnInit() {
-    // set initial selection
-    this.carCtrl.setValue([this.cars[1], this.cars[2]]);
+    // // set initial selection
+    // this.carCtrl.setValue([this.cars[1], this.cars[2]]);
 
-    // load the initial car list
-    this.filteredCars.next(this.cars.slice());
+    this.availableItemsInput
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe((items) => {
+        this.availableItems = items;
+        // load the initial car list
+        this.filteredItems.next(this.availableItems.slice());
+      });
+
 
     // listen for search field value changes
-    this.carFilterCtrl.valueChanges
+    this.itemFilterCtrl.valueChanges
       .pipe(takeUntil(this._onDestroy))
       .subscribe(() => {
-        this.filterCars();
+        this.filterItems();
       });
   }
 
@@ -75,40 +77,40 @@ export class MultiSelectComponent {
    * Sets the initial value after the filteredCars are loaded initially
    */
   protected setInitialValue() {
-    this.filteredCars
+    this.filteredItems
       .pipe(take(1), takeUntil(this._onDestroy))
       .subscribe(() => {
-        this.singleSelect.compareWith = (a: Car, b: Car) =>
+        this.singleSelect.compareWith = (a: MultiselectItem, b: MultiselectItem) =>
           a && b && a.id === b.id;
       });
   }
 
-  protected filterCars() {
-    if (!this.cars) {
+  protected filterItems() {
+    if (!this.availableItems) {
       return;
     }
     // get the search keyword
-    let search = this.carFilterCtrl.value;
+    let search = this.itemFilterCtrl.value;
     if (!search) {
-      this.filteredCars.next(this.cars.slice());
+      this.filteredItems.next(this.availableItems.slice());
       return;
     } else {
       search = search.toLowerCase();
     }
     // filter the cars
-    this.filteredCars.next(
-      this.cars.filter((car) => car.name.toLowerCase().indexOf(search) > -1)
+    this.filteredItems.next(
+      this.availableItems.filter((car) => car.name.toLowerCase().indexOf(search) > -1)
     );
   }
 
   toggleSelectAll(selectAllValue: boolean) {
-    this.filteredCars
+    this.filteredItems
       .pipe(take(1), takeUntil(this._onDestroy))
       .subscribe((val) => {
         if (selectAllValue) {
-          this.carCtrl.patchValue(val);
+          this.itemCtrl.patchValue(val);
         } else {
-          this.carCtrl.patchValue([]);
+          this.itemCtrl.patchValue([]);
         }
       });
   }

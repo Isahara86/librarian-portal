@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MultiSelectComponent } from './components/multi-select/multi-select.component';
+import { MatIconModule } from '@angular/material/icon';
 
 // import { MatListModule } from '@angular/material/list';
 // import { MatInputModule } from '@angular/material/input';
@@ -21,18 +22,19 @@ import { MultiSelectComponent } from './components/multi-select/multi-select.com
 
 @NgModule({
   declarations: [AppComponent, BooksListComponent, CreateBookComponent, LoginComponent, MultiSelectComponent],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    GraphQLModule,
-    BrowserAnimationsModule,
-    ReactiveFormsModule,
-    MatTableModule,
-    AppRoutingModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    NgxMatSelectSearchModule,
-  ],
+    imports: [
+        BrowserModule,
+        FormsModule,
+        GraphQLModule,
+        BrowserAnimationsModule,
+        ReactiveFormsModule,
+        MatTableModule,
+        AppRoutingModule,
+        MatSelectModule,
+        MatFormFieldModule,
+        NgxMatSelectSearchModule,
+        MatIconModule,
+    ],
   providers: [],
   bootstrap: [AppComponent],
 })

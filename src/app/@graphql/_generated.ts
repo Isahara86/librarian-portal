@@ -55,6 +55,7 @@ export type Book = {
   readonly description?: Maybe<Scalars['String']>;
   readonly id: Scalars['Int'];
   readonly isAvailable: Scalars['Boolean'];
+  readonly languages: ReadonlyArray<Language>;
   readonly name: Scalars['String'];
   readonly previewUrl?: Maybe<Scalars['String']>;
 };
@@ -64,6 +65,7 @@ export type BookCreateInput = {
   readonly categoryIds: ReadonlyArray<Scalars['Int']>;
   readonly description?: InputMaybe<Scalars['String']>;
   readonly inventories: ReadonlyArray<BookInventoryCreateInput>;
+  readonly languages: ReadonlyArray<Scalars['String']>;
   readonly name: Scalars['String'];
   /** When not set previous value will be used */
   readonly preview?: InputMaybe<Scalars['Upload']>;
@@ -76,6 +78,7 @@ export type BookDetails = {
   readonly id: Scalars['Int'];
   readonly inventories: ReadonlyArray<BookInventoryDetails>;
   readonly isAvailable: Scalars['Boolean'];
+  readonly languages: ReadonlyArray<Language>;
   readonly name: Scalars['String'];
   readonly previewUrl?: Maybe<Scalars['String']>;
 };
@@ -157,6 +160,7 @@ export type BookUpdateInput = {
   readonly categoryIds: ReadonlyArray<Scalars['Int']>;
   readonly description?: InputMaybe<Scalars['String']>;
   readonly id: Scalars['Int'];
+  readonly languages: ReadonlyArray<Scalars['String']>;
   readonly name: Scalars['String'];
   readonly newInventories: ReadonlyArray<BookInventoryCreateInput>;
   /** When not set previous value will be used */
@@ -246,6 +250,12 @@ export type CustomersSearchInput = {
   readonly query?: InputMaybe<Scalars['String']>;
 };
 
+export type Language = {
+  readonly code: Scalars['String'];
+  readonly name: Scalars['String'];
+  readonly nativeName: Scalars['String'];
+};
+
 export type Mutation = {
   readonly adminLogin: AdminLoginResponse;
   readonly createAuthor: Author;
@@ -324,6 +334,7 @@ export type Query = {
   readonly customerDetails: ReadonlyArray<CustomerDetails>;
   readonly customerReservationHistory: ReadonlyArray<CustomerDetailsReservation>;
   readonly customers: ReadonlyArray<Customer>;
+  readonly languages: ReadonlyArray<Language>;
 };
 
 
@@ -387,6 +398,11 @@ export type CreateBookMutationVariables = Exact<{
 
 export type CreateBookMutation = { readonly createBook: { readonly id: number } };
 
+export type LanguagesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LanguagesQuery = { readonly languages: ReadonlyArray<{ readonly code: string, readonly name: string, readonly nativeName: string }> };
+
 export const BooksListDocument = gql`
     query booksList($input: BookSearchInput!) {
   books(input: $input) {
@@ -440,6 +456,26 @@ export const CreateBookDocument = gql`
   })
   export class CreateBookGQL extends Apollo.Mutation<CreateBookMutation, CreateBookMutationVariables> {
     override document = CreateBookDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const LanguagesDocument = gql`
+    query languages {
+  languages {
+    code
+    name
+    nativeName
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class LanguagesGQL extends Apollo.Query<LanguagesQuery, LanguagesQueryVariables> {
+    override document = LanguagesDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

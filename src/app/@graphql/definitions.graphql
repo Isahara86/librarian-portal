@@ -20,3 +20,11 @@ mutation createBook($input: BookCreateInput!){
     id
   }
 }
+
+query languages {
+  languages {
+    code
+    name
+    nativeName
+  }
+}

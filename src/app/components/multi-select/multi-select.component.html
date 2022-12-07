@@ -3,15 +3,15 @@
     <h3>Material Multi Select Dropdown with search and checkboxes</h3>
     <mat-form-field>
       <mat-select
-        [formControl]="carCtrl"
-        placeholder="Car"
+        [formControl]="itemCtrl"
+        placeholder="{{placeholder}}"
         [multiple]="true"
         #singleSelect
       >
         <mat-option>
           <ngx-mat-select-search
-            [formControl]="carFilterCtrl"
-            placeholderLabel="Find cars..."
+            [formControl]="itemFilterCtrl"
+            placeholderLabel="Find {{placeholder}}..."
             noEntriesFoundLabel="'no matching found'"
             [showToggleAllCheckbox]="true"
             toggleAllCheckboxTooltipMessage="Select / Unselect All"
@@ -23,16 +23,16 @@
           </ngx-mat-select-search>
         </mat-option>
 
-        <mat-option *ngFor="let car of filteredCars | async" [value]="car">
+        <mat-option *ngFor="let car of filteredItems | async" [value]="car">
           {{ car.name }}
         </mat-option>
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="inner-wrap">
+  <div *ngIf="showSelectedValues" class="inner-wrap">
     <h3>Selected Values</h3>
-    <ul *ngFor="let car of carCtrl?.value">
-      <li>{{ car.name }}</li>
+    <ul *ngFor="let item of itemCtrl?.value">
+      <li>{{ item.name }}</li>
     </ul>
   </div>
 </div>

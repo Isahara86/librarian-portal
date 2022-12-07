@@ -1,20 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { AdminLoginGQL, CreateBookGQL, CreateBookMutationVariables } from '../../@graphql/_generated';
-import { addWarning } from '@angular-devkit/build-angular/src/utils/webpack-diagnostics';
+import {
+  CreateBookGQL,
+  CreateBookMutationVariables,
+  LanguagesGQL,
+} from '../../@graphql/_generated';
 import { Apollo } from 'apollo-angular';
+import { MultiselectItem } from '../../components/multi-select/multi-select.component';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-create-book',
   templateUrl: './create-book.component.html',
   styleUrls: ['./create-book.component.scss']
 })
-export class CreateBookComponent {
+export class CreateBookComponent implements OnInit {
 
   createBookForm = this.formBuilder.group({
     name: '',
     description: '',
   });
+
+  languagesInputOptions$ = new BehaviorSubject<MultiselectItem[]>([]);
 
   file?: File;
   preview?: string;
@@ -22,8 +29,14 @@ export class CreateBookComponent {
   constructor(
     private formBuilder: FormBuilder,
     private createBookGQL: CreateBookGQL,
+    private languagesGQL: LanguagesGQL,
     private apollo: Apollo,
   ) {
+  }
+
+  async ngOnInit(): Promise<void> {
+    const availableLanguages = await this.languagesGQL.fetch().toPromise();
+    this.languagesInputOptions$.next(availableLanguages!.data.languages.map(({code, name})=>({id: code, name})));
   }
 
 
@@ -43,34 +56,12 @@ export class CreateBookComponent {
   }
 
 
- async createBook() {
+  async createBook() {
     console.log(this.createBookForm.getRawValue());
     console.log(this.file);
     const formValues = this.createBookForm.getRawValue()
 
-   const variables: CreateBookMutationVariables = {
-     input: {
-       name: formValues.name!,
-       description: formValues.description,
-       preview: this.file,
-       authorIds: [],
-       categoryIds: [],
-       inventories: [],
-     }
-   };
-
-   const res = await this.apollo.mutate<any>({
-     mutation: this.createBookGQL.document,
-     variables,
-     context: {
-       useMultipart: true
-     }
-   }).toPromise();
-
-   // TODO find solution
-   console.log(res);
-
-    await this.createBookGQL.mutate({
+    const variables: CreateBookMutationVariables = {
       input: {
         name: formValues.name!,
         description: formValues.description,
@@ -78,8 +69,32 @@ export class CreateBookComponent {
         authorIds: [],
         categoryIds: [],
         inventories: [],
+        languages: [],
       }
-    }, ).toPromise();
+    };
+
+    const res = await this.apollo.mutate<any>({
+      mutation: this.createBookGQL.document,
+      variables,
+      context: {
+        useMultipart: true
+      }
+    }).toPromise();
+
+    // // TODO find solution
+    // console.log(res);
+    //
+    //  await this.createBookGQL.mutate({
+    //    input: {
+    //      name: formValues.name!,
+    //      description: formValues.description,
+    //      preview: this.file,
+    //      authorIds: [],
+    //      categoryIds: [],
+    //      inventories: [],
+    //      languages: [],
+    //    }
+    //  }).toPromise();
   }
 
 }
