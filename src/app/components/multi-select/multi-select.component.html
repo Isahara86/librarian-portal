@@ -1,9 +1,9 @@
 <div class="wrapper">
   <div class="inner-wrap">
-    <h3>Material Multi Select Dropdown with search and checkboxes</h3>
     <mat-form-field>
       <mat-select
         [formControl]="itemCtrl"
+        (valueChange)="onSelect.emit($event)"
         placeholder="{{placeholder}}"
         [multiple]="true"
         #singleSelect

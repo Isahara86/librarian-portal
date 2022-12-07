@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { BehaviorSubject, ReplaySubject, Subject, take, takeUntil } from 'rxjs';
 import { UntypedFormControl } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
@@ -15,8 +15,8 @@ export interface MultiselectItem {
   styleUrls: ['./multi-select.component.scss']
 })
 export class MultiSelectComponent {
-
-  @Input() availableItemsInput!: BehaviorSubject<MultiselectItem[]>;
+  @Output() onSelect = new EventEmitter<MultiselectItem[]>();
+  @Input() availableOptions$!: BehaviorSubject<MultiselectItem[]>;
   @Input() placeholder?: string;
   @Input() showSelectedValues = false;
   availableItems: MultiselectItem[] = [];
@@ -47,7 +47,7 @@ export class MultiSelectComponent {
     // // set initial selection
     // this.carCtrl.setValue([this.cars[1], this.cars[2]]);
 
-    this.availableItemsInput
+    this.availableOptions$
       .pipe(takeUntil(this._onDestroy))
       .subscribe((items) => {
         this.availableItems = items;
@@ -114,5 +114,4 @@ export class MultiSelectComponent {
         }
       });
   }
-
 }

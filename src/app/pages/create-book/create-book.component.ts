@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import {
+  AuthorsGQL,
+  CategoriesGQL,
   CreateBookGQL,
   CreateBookMutationVariables,
   LanguagesGQL,
@@ -21,7 +23,12 @@ export class CreateBookComponent implements OnInit {
     description: '',
   });
 
-  languagesInputOptions$ = new BehaviorSubject<MultiselectItem[]>([]);
+  languageOptions$ = new BehaviorSubject<MultiselectItem[]>([]);
+  selectedLangcodes: MultiselectItem[] = [];
+  categoryOptions$ = new BehaviorSubject<MultiselectItem[]>([]);
+  selectedCategories: MultiselectItem[] = [];
+  authorOptions$ = new BehaviorSubject<MultiselectItem[]>([]);
+  selectedAuthors: MultiselectItem[] = [];
 
   file?: File;
   preview?: string;
@@ -30,15 +37,22 @@ export class CreateBookComponent implements OnInit {
     private formBuilder: FormBuilder,
     private createBookGQL: CreateBookGQL,
     private languagesGQL: LanguagesGQL,
+    private categoriesGQL: CategoriesGQL,
+    private authorsGQL: AuthorsGQL,
     private apollo: Apollo,
   ) {
   }
 
   async ngOnInit(): Promise<void> {
     const availableLanguages = await this.languagesGQL.fetch().toPromise();
-    this.languagesInputOptions$.next(availableLanguages!.data.languages.map(({code, name})=>({id: code, name})));
-  }
+    this.languageOptions$.next(availableLanguages!.data.languages.map(({code, name}) => ({id: code, name})));
 
+    const categories = await this.categoriesGQL.fetch({input: {offset: 0, limit: 100}}).toPromise();
+    this.categoryOptions$.next(categories!.data.categories.map(({id, name}) => ({id: id.toString(), name})));
+
+    const authors = await this.authorsGQL.fetch({input: {offset: 0, limit: 500}}).toPromise();
+    this.authorOptions$.next(authors!.data.authors.map(({id, name}) => ({id: id.toString(), name})));
+  }
 
   updateFile(event: any) {
     // @ts-ignore
@@ -66,10 +80,10 @@ export class CreateBookComponent implements OnInit {
         name: formValues.name!,
         description: formValues.description,
         preview: this.file,
-        authorIds: [],
-        categoryIds: [],
+        authorIds: this.selectedAuthors.map(a => +a.id),
+        categoryIds: this.selectedCategories.map(c => +c.id),
         inventories: [],
-        languages: [],
+        languages: this.selectedLangcodes.map(l => l.id),
       }
     };
 

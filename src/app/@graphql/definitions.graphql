@@ -28,3 +28,17 @@ query languages {
     nativeName
   }
 }
+
+query categories($input: CategorySearchInput!) {
+  categories(input: $input) {
+    id
+    name
+  }
+}
+
+query authors($input: AuthorSearchInput!) {
+  authors(input: $input) {
+    id
+    name
+  }
+}

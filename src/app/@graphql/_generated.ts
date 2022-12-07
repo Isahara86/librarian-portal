@@ -403,6 +403,20 @@ export type LanguagesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type LanguagesQuery = { readonly languages: ReadonlyArray<{ readonly code: string, readonly name: string, readonly nativeName: string }> };
 
+export type CategoriesQueryVariables = Exact<{
+  input: CategorySearchInput;
+}>;
+
+
+export type CategoriesQuery = { readonly categories: ReadonlyArray<{ readonly id: number, readonly name: string }> };
+
+export type AuthorsQueryVariables = Exact<{
+  input: AuthorSearchInput;
+}>;
+
+
+export type AuthorsQuery = { readonly authors: ReadonlyArray<{ readonly id: number, readonly name: string }> };
+
 export const BooksListDocument = gql`
     query booksList($input: BookSearchInput!) {
   books(input: $input) {
@@ -476,6 +490,44 @@ export const LanguagesDocument = gql`
   })
   export class LanguagesGQL extends Apollo.Query<LanguagesQuery, LanguagesQueryVariables> {
     override document = LanguagesDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CategoriesDocument = gql`
+    query categories($input: CategorySearchInput!) {
+  categories(input: $input) {
+    id
+    name
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CategoriesGQL extends Apollo.Query<CategoriesQuery, CategoriesQueryVariables> {
+    override document = CategoriesDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const AuthorsDocument = gql`
+    query authors($input: AuthorSearchInput!) {
+  authors(input: $input) {
+    id
+    name
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class AuthorsGQL extends Apollo.Query<AuthorsQuery, AuthorsQueryVariables> {
+    override document = AuthorsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
