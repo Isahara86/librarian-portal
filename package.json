@@ -31,6 +31,7 @@
     "extract-files": "^13.0.0",
     "graphql": "~16.6.0",
     "guid-typescript": "^1.0.9",
+    "ngx-mat-select-search": "5.0.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
