@@ -14,7 +14,8 @@ import isExtractableFile from 'extract-files/isExtractableFile.mjs';
 // import { WebSocketLink } from '@apollo/client/link/ws';
 // const GQL_WS_ENDPOINT = environment.graphqlWSEndpoint;
 
-const uri = 'http://localhost:11300/graphql';
+// const uri = 'http://localhost:11300/graphql';
+const uri = 'http://192.168.2.36:11300/graphql';
 
 export function createApolloWithToken(httpLink: HttpLink, token: string): ApolloClientOptions<any>  {
   const basic = setContext((operation, context) => ({
