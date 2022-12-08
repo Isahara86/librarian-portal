@@ -18,12 +18,35 @@
   <div class="form-group">
   </div>
 
-  <mat-card style="height: 230px; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+  <mat-card style="margin-bottom: 10px; height: 230px; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;">
     <input style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;"
            type="file" class="file"
            (change)="updateFile($event)"/>
     <img style="max-height: 100%; width: auto;" mat-card-image [src]="(preview && preview !== null) ? preview : '/assets/camera-icon.png'" alt="Photo of a Shiba Inu">
   </mat-card>
+
+
+  <ng-container formArrayName="inventories">
+    <ng-container *ngFor="let inventory of this.createBookForm.controls.inventories.controls; let i = index">
+      <div [formGroupName]="i">
+
+        <mat-form-field appearance="fill">
+          <input matInput
+                 formControlName="serialNumber"
+                 placeholder="Serial number">
+        </mat-form-field>
+
+        <mat-icon class="delete-btn" (click)="removeInventory(i)">
+          delete_forever</mat-icon>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <div class="example-button-container">
+    <button type="button" (click)="addInventory()" mat-mini-fab color="primary" aria-label="Example icon button with a plus one icon">
+      <mat-icon>plus_one</mat-icon>
+    </button>
+  </div>
 
 
   <button style="margin: 20px 0;"

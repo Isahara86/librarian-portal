@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {
   AuthorsGQL,
   CategoriesGQL,
@@ -23,6 +23,7 @@ export class CreateBookComponent implements OnInit {
   createBookForm = this.formBuilder.group({
     name: ['', Validators.required],
     description: [''],
+    inventories: this.formBuilder.array<FormGroup<{ serialNumber: FormControl<string | null>; }>>([]),
   });
 
   languageOptions$ = new BehaviorSubject<MultiselectItem[]>([]);
@@ -57,6 +58,22 @@ export class CreateBookComponent implements OnInit {
     this.authorOptions$.next(authors!.data.authors.map(({id, name}) => ({id: id.toString(), name})));
   }
 
+  get lessons() {
+    return this.createBookForm.controls.inventories as any;
+  }
+
+  addInventory(): void {
+    const inventory = this.formBuilder.group({
+      serialNumber: ['', Validators.required],
+    });
+
+    this.createBookForm.controls.inventories.push(inventory)
+  }
+
+  removeInventory(inventoryIndex: number): void {
+    this.createBookForm.controls.inventories.removeAt(inventoryIndex);
+  }
+
   updateFile(event: any) {
     // @ts-ignore
     this.file = (event?.target as HTMLInputElement)?.files[0];
@@ -74,8 +91,6 @@ export class CreateBookComponent implements OnInit {
 
 
   async createBook() {
-    console.log(this.createBookForm.getRawValue());
-    console.log(this.file);
     const formValues = this.createBookForm.getRawValue()
 
     const variables: CreateBookMutationVariables = {
@@ -85,7 +100,7 @@ export class CreateBookComponent implements OnInit {
         preview: this.file,
         authorIds: this.selectedAuthors.map(a => +a.id),
         categoryIds: this.selectedCategories.map(c => +c.id),
-        inventories: [],
+        inventories: formValues.inventories as any,
         languages: this.selectedLangcodes.map(l => l.id),
       }
     };
