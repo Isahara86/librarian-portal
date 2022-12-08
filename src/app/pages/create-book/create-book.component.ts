@@ -93,9 +93,6 @@ export class CreateBookComponent implements OnInit {
   async createBook() {
     const formValues = this.createBookForm.getRawValue()
 
-    console.log(formValues);
-    return;
-
     const variables: CreateBookMutationVariables = {
       input: {
         name: formValues.name!,
