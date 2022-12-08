@@ -7,12 +7,21 @@
   <app-input controlName="description" label="description"></app-input>
 
 
-  <app-multi-select [availableOptions$]="languageOptions$" [placeholder]='"Lang"'
-                    (onSelect)="selectedLangcodes = $event"></app-multi-select>
-  <app-multi-select [availableOptions$]="categoryOptions$" [placeholder]='"Categories"'
-                    (onSelect)="selectedCategories = $event"></app-multi-select>
-  <app-multi-select [availableOptions$]="authorOptions$" [placeholder]='"Authors"'
-                    (onSelect)="selectedAuthors = $event"></app-multi-select>
+  <app-multi-select [availableOptions$]="languageOptions$"
+                    [placeholder]='"Lang"'
+                    (onSelect)="selectedLangcodes = $event"
+                    [showSelectedValues]="true"
+  ></app-multi-select>
+  <app-multi-select [availableOptions$]="categoryOptions$"
+                    [placeholder]='"Categories"'
+                    (onSelect)="selectedCategories = $event"
+                    [createResource]="createCategory"
+  ></app-multi-select>
+  <app-multi-select [availableOptions$]="authorOptions$"
+                    [placeholder]='"Authors"'
+                    (onSelect)="selectedAuthors = $event"
+                    [createResource]="createAuthor"
+  ></app-multi-select>
 
   <!-- File Input -->
   <div class="form-group">

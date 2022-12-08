@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {
   AuthorsGQL,
-  CategoriesGQL,
+  CategoriesGQL, CreateAuthorGQL,
   CreateBookGQL,
-  CreateBookMutationVariables,
+  CreateBookMutationVariables, CreateCategoryGQL,
   LanguagesGQL,
 } from '../../@graphql/_generated';
 import { Apollo } from 'apollo-angular';
@@ -42,18 +42,34 @@ export class CreateBookComponent implements OnInit {
     private languagesGQL: LanguagesGQL,
     private categoriesGQL: CategoriesGQL,
     private authorsGQL: AuthorsGQL,
+    private createAuthorGQL: CreateAuthorGQL,
+    private createCategoryGQL: CreateCategoryGQL,
     private apollo: Apollo,
     private router: Router,
   ) {
   }
 
   async ngOnInit(): Promise<void> {
+    this.createAuthor = this.createAuthor.bind(this);
+    this.createCategory = this.createCategory.bind(this);
+    await Promise.all([
+      this.fetchLanguages(),
+      this.fetchCategories(),
+      this.fetchAuthors(),
+    ]);
+  }
+
+  async fetchLanguages(): Promise<void> {
     const availableLanguages = await this.languagesGQL.fetch().toPromise();
     this.languageOptions$.next(availableLanguages!.data.languages.map(({code, name}) => ({id: code, name})));
+  }
 
+  async fetchCategories(): Promise<void> {
     const categories = await this.categoriesGQL.fetch({input: {offset: 0, limit: 100}}).toPromise();
     this.categoryOptions$.next(categories!.data.categories.map(({id, name}) => ({id: id.toString(), name})));
+  }
 
+  async fetchAuthors(): Promise<void> {
     const authors = await this.authorsGQL.fetch({input: {offset: 0, limit: 500}}).toPromise();
     this.authorOptions$.next(authors!.data.authors.map(({id, name}) => ({id: id.toString(), name})));
   }
@@ -134,4 +150,23 @@ export class CreateBookComponent implements OnInit {
     //  }).toPromise();
   }
 
+  async createAuthor(name: string): Promise<void> {
+    await this.createAuthorGQL.mutate({input: {name}})
+      .toPromise()
+      .then(res => this.fetchAuthors())
+      .catch(err => {
+        this.error = err;
+        this.loading = false;
+      });
+  }
+
+  async createCategory(name: string): Promise<void> {
+    await this.createCategoryGQL.mutate({input: {name}})
+      .toPromise()
+      .then(res => this.fetchCategories())
+      .catch(err => {
+        this.error = err;
+        this.loading = false;
+      });
+  }
 }

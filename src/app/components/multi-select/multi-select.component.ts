@@ -18,6 +18,7 @@ export class MultiSelectComponent {
   @Input() availableOptions$!: BehaviorSubject<MultiselectItem[]>;
   @Input() placeholder?: string;
   @Input() showSelectedValues = false;
+  @Input() createResource?: (name: string) => Promise<void>;
   availableItems: MultiselectItem[] = [];
 
   /** control for the selected car */
@@ -89,7 +90,7 @@ export class MultiSelectComponent {
       return;
     }
     // get the search keyword
-    let search = this.itemFilterCtrl.value;
+    let search = this.itemFilterCtrl.value?.trim();
     if (!search) {
       this.filteredItems.next(this.availableItems.slice());
       return;
@@ -102,15 +103,36 @@ export class MultiSelectComponent {
     );
   }
 
-  toggleSelectAll(selectAllValue: boolean) {
-    this.filteredItems
-      .pipe(take(1), takeUntil(this._onDestroy))
-      .subscribe((val) => {
-        if (selectAllValue) {
-          this.itemCtrl.patchValue(val);
-        } else {
-          this.itemCtrl.patchValue([]);
-        }
-      });
+
+  onCreate() {
+    let search = this.itemFilterCtrl.value;
+    if (this.createResource && search) {
+      this.createResource(search)
+        .then(() => this.filterItems());
+    }
   }
+
+  // toggleSelectAll(selectAllValue: boolean) {
+  //   this.filteredItems
+  //     .pipe(take(1), takeUntil(this._onDestroy))
+  //     .subscribe((val) => {
+  //       if (selectAllValue) {
+  //         this.itemCtrl.patchValue(val);
+  //       } else {
+  //         this.itemCtrl.patchValue([]);
+  //       }
+  //     });
+  // }
+
+  checkIfShowCreateButton(values: MultiselectItem[] | undefined | null): boolean {
+    const searchValue = this.itemFilterCtrl.value?.trim();
+    if (!this.createResource || !values || !searchValue) {
+      return false
+    }
+
+    const hasSameAuthor = values.some(mi=>mi.name===searchValue)
+
+    return !hasSameAuthor;
+  }
+
 }
