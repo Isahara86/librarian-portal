@@ -1,3 +1,4 @@
+<div *ngIf="error" class="alert alert-danger">{{error}}</div>
 <form [formGroup]="createBookForm" (ngSubmit)="createBook()">
 
   <div>
@@ -32,7 +33,7 @@
   </div>
 
 
-  <button class="button" type="submit">Save</button>
+  <button class="button" type="submit" [disabled]="loading">Save</button>
 
 
 </form>

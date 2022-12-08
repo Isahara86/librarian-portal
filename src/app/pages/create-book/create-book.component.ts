@@ -10,6 +10,7 @@ import {
 import { Apollo } from 'apollo-angular';
 import { MultiselectItem } from '../../components/multi-select/multi-select.component';
 import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-book',
@@ -17,7 +18,8 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./create-book.component.scss']
 })
 export class CreateBookComponent implements OnInit {
-
+  loading = false;
+  error?: string;
   createBookForm = this.formBuilder.group({
     name: '',
     description: '',
@@ -40,6 +42,7 @@ export class CreateBookComponent implements OnInit {
     private categoriesGQL: CategoriesGQL,
     private authorsGQL: AuthorsGQL,
     private apollo: Apollo,
+    private router: Router,
   ) {
   }
 
@@ -93,7 +96,12 @@ export class CreateBookComponent implements OnInit {
       context: {
         useMultipart: true
       }
-    }).toPromise();
+    }).toPromise()
+      .then(res => this.router.navigate(['']))
+      .catch(err => {
+        this.error = err;
+        this.loading = false;
+      });
 
     // // TODO find solution
     // console.log(res);

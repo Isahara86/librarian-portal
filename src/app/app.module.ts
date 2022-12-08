@@ -16,26 +16,36 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MultiSelectComponent } from './components/multi-select/multi-select.component';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from './services/auth.service';
+import { CreateAuthorComponent } from './pages/create-author/create-author.component';
+import { CreateCategoryComponent } from './pages/create-category/create-category.component';
 
 // import { MatListModule } from '@angular/material/list';
 // import { MatInputModule } from '@angular/material/input';
 // import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
-  declarations: [AppComponent, BooksListComponent, CreateBookComponent, LoginComponent, MultiSelectComponent],
-    imports: [
-        BrowserModule,
-        FormsModule,
-        GraphQLModule,
-        BrowserAnimationsModule,
-        ReactiveFormsModule,
-        MatTableModule,
-        AppRoutingModule,
-        MatSelectModule,
-        MatFormFieldModule,
-        NgxMatSelectSearchModule,
-        MatIconModule,
-    ],
+  declarations: [
+    AppComponent,
+    BooksListComponent,
+    CreateBookComponent,
+    LoginComponent,
+    MultiSelectComponent,
+    CreateAuthorComponent,
+    CreateCategoryComponent,
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    GraphQLModule,
+    BrowserAnimationsModule,
+    ReactiveFormsModule,
+    MatTableModule,
+    AppRoutingModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    NgxMatSelectSearchModule,
+    MatIconModule,
+  ],
   providers: [
     AuthService,
     // { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
