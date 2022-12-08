@@ -6,7 +6,6 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
   loading = false;
@@ -15,7 +14,7 @@ export class LoginComponent implements OnInit {
   error?: string;
 
   loginForm = this.formBuilder.group({
-    username: ['', Validators.required],
+    login: ['', Validators.required],
     password: ['', Validators.required]
   });
 
@@ -47,7 +46,7 @@ export class LoginComponent implements OnInit {
     }
 
     this.loading = true;
-    await this.authService.adminLogin(this.f.username.value!, this.f.password.value!)
+    await this.authService.adminLogin(this.f.login.value!, this.f.password.value!)
       .then(res => this.router.navigate([this.returnUrl]))
       .catch(err => {
         this.error = err;
