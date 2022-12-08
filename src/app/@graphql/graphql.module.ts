@@ -9,16 +9,14 @@ import { setContext } from '@apollo/client/link/context';
 import extractFiles from 'extract-files/extractFiles.mjs';
 // @ts-ignore
 import isExtractableFile from 'extract-files/isExtractableFile.mjs';
-import { AuthService } from '../services/auth.service';
+import { environment } from '../../environments/environment';
 
 // import { environment } from 'src/environments/environment';
 // import { WebSocketLink } from '@apollo/client/link/ws';
 // const GQL_WS_ENDPOINT = environment.graphqlWSEndpoint;
 
-// const uri = 'http://localhost:11300/graphql';
-const uri = 'http://192.168.2.36:11300/graphql';
 
-export function createApolloWithToken(httpLink: HttpLink, token: string): ApolloClientOptions<any>  {
+export function createApolloWithToken(httpLink: HttpLink, token: string): ApolloClientOptions<any> {
   const basic = setContext((operation, context) => ({
     headers: {
       Accept: 'charset=utf-8'
@@ -61,7 +59,10 @@ export function createApolloWithToken(httpLink: HttpLink, token: string): Apollo
   //   };
   // });
 
-  const link = ApolloLink.from([basic, auth, httpLink.create({ uri, extractFiles: (body) => extractFiles(body, isExtractableFile), })]);
+  const link = ApolloLink.from([basic, auth, httpLink.create({
+    uri: environment.API_URL,
+    extractFiles: (body) => extractFiles(body, isExtractableFile),
+  })]);
   const cache = new InMemoryCache();
 
   const defaultOptions: DefaultOptions = {
@@ -110,7 +111,10 @@ function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   //   };
   // });
 
-  const link = ApolloLink.from([basic, httpLink.create({ uri, extractFiles: (body) => extractFiles(body, isExtractableFile), })]);
+  const link = ApolloLink.from([basic, httpLink.create({
+    uri: environment.API_URL,
+    extractFiles: (body) => extractFiles(body, isExtractableFile),
+  })]);
   const cache = new InMemoryCache();
 
   const defaultOptions: DefaultOptions = {
@@ -144,4 +148,5 @@ function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   },],
   declarations: [],
 })
-export class GraphQLModule {}
+export class GraphQLModule {
+}
