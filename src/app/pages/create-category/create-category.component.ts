@@ -5,8 +5,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-category',
-  templateUrl: './create-category.component.html',
-  styleUrls: ['./create-category.component.scss']
+  templateUrl: './create-category.component.html'
 })
 export class CreateCategoryComponent implements OnInit {
   loading = false;

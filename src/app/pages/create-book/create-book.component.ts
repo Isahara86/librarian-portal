@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import {
   AuthorsGQL,
   CategoriesGQL,
@@ -21,8 +21,8 @@ export class CreateBookComponent implements OnInit {
   loading = false;
   error?: string;
   createBookForm = this.formBuilder.group({
-    name: '',
-    description: '',
+    name: ['', Validators.required],
+    description: [''],
   });
 
   languageOptions$ = new BehaviorSubject<MultiselectItem[]>([]);

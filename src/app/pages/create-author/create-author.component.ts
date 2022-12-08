@@ -6,12 +6,13 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-create-author',
   templateUrl: './create-author.component.html',
-  styleUrls: ['./create-author.component.scss']
 })
 export class CreateAuthorComponent implements OnInit {
   loading = false;
   submitted = false;
   error?: string;
+
+  value = 'Clear me';
 
   createForm = this.formBuilder.group({
     name: ['', Validators.required],

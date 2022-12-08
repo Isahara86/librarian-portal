@@ -18,10 +18,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from './services/auth.service';
 import { CreateAuthorComponent } from './pages/create-author/create-author.component';
 import { CreateCategoryComponent } from './pages/create-category/create-category.component';
+import { AppInputComponent } from './components/app-input/app-input.component';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { AppFormComponent } from './components/app-form/app-form.component';
+import { MatCardModule } from '@angular/material/card';
 
 // import { MatListModule } from '@angular/material/list';
-// import { MatInputModule } from '@angular/material/input';
-// import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -32,6 +35,8 @@ import { CreateCategoryComponent } from './pages/create-category/create-category
     MultiSelectComponent,
     CreateAuthorComponent,
     CreateCategoryComponent,
+    AppInputComponent,
+    AppFormComponent,
   ],
   imports: [
     BrowserModule,
@@ -45,6 +50,9 @@ import { CreateCategoryComponent } from './pages/create-category/create-category
     MatFormFieldModule,
     NgxMatSelectSearchModule,
     MatIconModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCardModule,
   ],
   providers: [
     AuthService,

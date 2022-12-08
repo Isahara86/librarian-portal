@@ -1,39 +1,36 @@
-<div *ngIf="error" class="alert alert-danger">{{error}}</div>
-<form [formGroup]="createBookForm" (ngSubmit)="createBook()">
+<app-form [formGroup]="createBookForm" (onSubmit)="createBook()">
+  <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+  <h2>Create Book</h2>
 
-  <div>
-    <label for="name">
-      Name
-    </label>
-    <input id="name" type="text" formControlName="name">
-  </div>
+  <app-input controlName="name" [control]="createBookForm.controls.name"></app-input>
+
+  <app-input controlName="description" [control]="createBookForm.controls.description"></app-input>
 
 
-  <div>
-    <label for="description">
-      Description
-    </label>
-    <input id="description" type="text" formControlName="description">
-  </div>
-
-  <div class="form-group">
-    <div class="preview" *ngIf="preview && preview !== null">
-      <img [src]="preview" [alt]="preview">
-    </div>
-  </div>
-
-
-  <app-multi-select [availableOptions$]="languageOptions$" [placeholder]='"Lang"' (onSelect)="selectedLangcodes = $event"></app-multi-select>
-  <app-multi-select [availableOptions$]="categoryOptions$" [placeholder]='"Categories"' (onSelect)="selectedCategories = $event"></app-multi-select>
-  <app-multi-select [availableOptions$]="authorOptions$" [placeholder]='"Authors"' (onSelect)="selectedAuthors = $event"></app-multi-select>
+  <app-multi-select [availableOptions$]="languageOptions$" [placeholder]='"Lang"'
+                    (onSelect)="selectedLangcodes = $event"></app-multi-select>
+  <app-multi-select [availableOptions$]="categoryOptions$" [placeholder]='"Categories"'
+                    (onSelect)="selectedCategories = $event"></app-multi-select>
+  <app-multi-select [availableOptions$]="authorOptions$" [placeholder]='"Authors"'
+                    (onSelect)="selectedAuthors = $event"></app-multi-select>
 
   <!-- File Input -->
   <div class="form-group">
-    <input type="file" (change)="updateFile($event)">
   </div>
 
+  <mat-card style="height: 230px; position: relative;">
+    <input style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;"
+           type="file" class="file"
+           (change)="updateFile($event)"/>
+    <img *ngIf="preview && preview !== null" mat-card-image [src]="preview" alt="Photo of a Shiba Inu">
+  </mat-card>
 
-  <button class="button" type="submit" [disabled]="loading">Save</button>
+
+  <button style="margin: 20px 0;"
+          mat-flat-button color="primary"
+          [disabled]="loading || createBookForm.invalid">
+    Create
+  </button>
 
 
-</form>
+</app-form>
