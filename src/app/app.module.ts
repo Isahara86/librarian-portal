@@ -23,6 +23,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { AppFormComponent } from './components/app-form/app-form.component';
 import { MatCardModule } from '@angular/material/card';
+import { MatMenuModule } from '@angular/material/menu';
 
 // import { MatListModule } from '@angular/material/list';
 
@@ -38,22 +39,23 @@ import { MatCardModule } from '@angular/material/card';
     AppInputComponent,
     AppFormComponent,
   ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    GraphQLModule,
-    BrowserAnimationsModule,
-    ReactiveFormsModule,
-    MatTableModule,
-    AppRoutingModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    NgxMatSelectSearchModule,
-    MatIconModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCardModule,
-  ],
+    imports: [
+        BrowserModule,
+        FormsModule,
+        GraphQLModule,
+        BrowserAnimationsModule,
+        ReactiveFormsModule,
+        MatTableModule,
+        AppRoutingModule,
+        MatSelectModule,
+        MatFormFieldModule,
+        NgxMatSelectSearchModule,
+        MatIconModule,
+        MatInputModule,
+        MatButtonModule,
+        MatCardModule,
+        MatMenuModule,
+    ],
   providers: [
     AuthService,
     // { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

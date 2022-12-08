@@ -1,14 +1,15 @@
-<h1>Librarian App</h1>
+<h1 style="margin: 20px;">Librarian App</h1>
 
+<button style="margin: 20px;" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+  <mat-icon>more_vert</mat-icon>
+</button>
+<mat-menu #menu="matMenu" >
+  <a mat-menu-item routerLink="/books" routerLinkActive="active" ariaCurrentWhenActive="page">Books</a>
+  <a mat-menu-item routerLink="/create-book" routerLinkActive="active" ariaCurrentWhenActive="page">Create Book</a>
+  <a mat-menu-item routerLink="/create-author" routerLinkActive="active" ariaCurrentWhenActive="page">Create Author</a>
+  <a mat-menu-item routerLink="/create-category" routerLinkActive="active" ariaCurrentWhenActive="page">Create Category</a>
+  <a mat-menu-item routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">Login</a>
+</mat-menu>
 
-<nav>
-  <ul>
-    <li><a routerLink="/books" routerLinkActive="active" ariaCurrentWhenActive="page">Books</a></li>
-    <li><a routerLink="/create-book" routerLinkActive="active" ariaCurrentWhenActive="page">Create Book</a></li>
-    <li><a routerLink="/create-author" routerLinkActive="active" ariaCurrentWhenActive="page">Create Author</a></li>
-    <li><a routerLink="/create-category" routerLinkActive="active" ariaCurrentWhenActive="page">Create Category</a></li>
-    <li><a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">Login</a></li>
-  </ul>
-</nav>
 <!-- The routed views render in the <router-outlet>-->
 <router-outlet></router-outlet>
