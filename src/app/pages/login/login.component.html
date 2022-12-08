@@ -2,8 +2,8 @@
 <div *ngIf="error" class="alert alert-danger">{{error}}</div>
 <h2>Login</h2>
 
-  <app-input controlName="login" [control]="loginForm.controls.login"></app-input>
-  <app-input controlName="password" [control]="loginForm.controls.password"></app-input>
+  <app-input controlName="login" label="login"></app-input>
+  <app-input controlName="password" label="password"></app-input>
 
   <button mat-flat-button color="primary" [disabled]="loading || loginForm.invalid">Login</button>
 

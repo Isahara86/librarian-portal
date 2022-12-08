@@ -2,12 +2,12 @@ import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ControlContainer, FormControl, FormGroupDirective } from '@angular/forms';
 
 @Component({
-  selector: 'app-input[control][controlName]',
+  selector: 'app-input[controlName]',
   template: `
     <mat-form-field class="example-form-field" appearance="fill" style="width: 100%;">
-      <mat-label *ngIf="controlName">{{controlName}}</mat-label>
-      <input matInput type="{{type}}" formControlName="{{controlName}}">
-      <button *ngIf="control.value" matSuffix mat-icon-button aria-label="Clear" (click)="control.setValue('')">
+      <mat-label *ngIf="label">{{label}}</mat-label>
+      <input matInput type="{{type}}" formControlName="{{controlName}}" #userInput>
+      <button *ngIf="userInput.value" matSuffix mat-icon-button aria-label="Clear" (click)="userInput.value = ''">
         <mat-icon>close</mat-icon>
       </button>
     </mat-form-field>`,
@@ -20,7 +20,6 @@ import { ControlContainer, FormControl, FormGroupDirective } from '@angular/form
 })
 export class AppInputComponent implements OnInit {
   @Input() label?: string;
-  @Input() control!: FormControl;
   @Input() type: string = 'text';
   @Input() controlName!: string;
 

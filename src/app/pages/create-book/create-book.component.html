@@ -2,9 +2,9 @@
   <div *ngIf="error" class="alert alert-danger">{{error}}</div>
   <h2>Create Book</h2>
 
-  <app-input controlName="name" [control]="createBookForm.controls.name"></app-input>
+  <app-input controlName="name" label="name"></app-input>
 
-  <app-input controlName="description" [control]="createBookForm.controls.description"></app-input>
+  <app-input controlName="description" label="description"></app-input>
 
 
   <app-multi-select [availableOptions$]="languageOptions$" [placeholder]='"Lang"'
