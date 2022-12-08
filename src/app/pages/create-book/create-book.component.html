@@ -18,11 +18,11 @@
   <div class="form-group">
   </div>
 
-  <mat-card style="height: 230px; position: relative;">
+  <mat-card style="height: 230px; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;">
     <input style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;"
            type="file" class="file"
            (change)="updateFile($event)"/>
-    <img *ngIf="preview && preview !== null" mat-card-image [src]="preview" alt="Photo of a Shiba Inu">
+    <img style="max-height: 100%; width: auto;" mat-card-image [src]="(preview && preview !== null) ? preview : '/assets/camera-icon.png'" alt="Photo of a Shiba Inu">
   </mat-card>
 
 
