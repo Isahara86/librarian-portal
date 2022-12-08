@@ -417,6 +417,20 @@ export type AuthorsQueryVariables = Exact<{
 
 export type AuthorsQuery = { readonly authors: ReadonlyArray<{ readonly id: number, readonly name: string }> };
 
+export type CreateAuthorMutationVariables = Exact<{
+  input: AuthorCreateInput;
+}>;
+
+
+export type CreateAuthorMutation = { readonly createAuthor: { readonly id: number } };
+
+export type CreateCategoryMutationVariables = Exact<{
+  input: CategoryCreateInput;
+}>;
+
+
+export type CreateCategoryMutation = { readonly createCategory: { readonly id: number } };
+
 export const BooksListDocument = gql`
     query booksList($input: BookSearchInput!) {
   books(input: $input) {
@@ -528,6 +542,42 @@ export const AuthorsDocument = gql`
   })
   export class AuthorsGQL extends Apollo.Query<AuthorsQuery, AuthorsQueryVariables> {
     override document = AuthorsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateAuthorDocument = gql`
+    mutation createAuthor($input: AuthorCreateInput!) {
+  createAuthor(input: $input) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateAuthorGQL extends Apollo.Mutation<CreateAuthorMutation, CreateAuthorMutationVariables> {
+    override document = CreateAuthorDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateCategoryDocument = gql`
+    mutation createCategory($input: CategoryCreateInput!) {
+  createCategory(input: $input) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateCategoryGQL extends Apollo.Mutation<CreateCategoryMutation, CreateCategoryMutationVariables> {
+    override document = CreateCategoryDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

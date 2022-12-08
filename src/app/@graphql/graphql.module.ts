@@ -9,6 +9,7 @@ import { setContext } from '@apollo/client/link/context';
 import extractFiles from 'extract-files/extractFiles.mjs';
 // @ts-ignore
 import isExtractableFile from 'extract-files/isExtractableFile.mjs';
+import { AuthService } from '../services/auth.service';
 
 // import { environment } from 'src/environments/environment';
 // import { WebSocketLink } from '@apollo/client/link/ws';
@@ -88,21 +89,6 @@ function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     }
   }));
 
-  const auth = setContext((operation, context) => {
-    const token = localStorage.getItem('token');
-    // let token = this.auth.getCachedAccessToken();
-
-    if (token === null) {
-      return {};
-    } else {
-      return {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      };
-    }
-  });
-
   // // autho refresh token
   // const auth = setContext(async(_, { headers }) => {
   //   // Grab token if there is one in storage or hasn't expired
@@ -124,7 +110,7 @@ function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   //   };
   // });
 
-  const link = ApolloLink.from([basic, auth, httpLink.create({ uri, extractFiles: (body) => extractFiles(body, isExtractableFile), })]);
+  const link = ApolloLink.from([basic, httpLink.create({ uri, extractFiles: (body) => extractFiles(body, isExtractableFile), })]);
   const cache = new InMemoryCache();
 
   const defaultOptions: DefaultOptions = {
@@ -158,24 +144,4 @@ function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   },],
   declarations: [],
 })
-export class GraphQLModule {
-  // constructor(public apollo: Apollo) {
-  //   this.initApolloWithHeaders({
-  //     'x-hasura-admin-secret': '<your-admin-secret>',
-  //   });
-  //
-  //   // Use this for Token based authentication
-  //   //this.initApolloWithHeaders({ authorization: 'Bearer ' + token })
-  // }
-  //
-  // private initApolloWithHeaders(headers: any) {
-  //
-  //   this.apollo.create(
-  //     {
-  //       uri: 'http://localhost:11300/graphql',
-  //       cache: new InMemoryCache(),
-  //     },
-  //     'default'
-  //   );
-  // }
-}
+export class GraphQLModule {}

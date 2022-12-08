@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MultiSelectComponent } from './components/multi-select/multi-select.component';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from './services/auth.service';
 
 // import { MatListModule } from '@angular/material/list';
 // import { MatInputModule } from '@angular/material/input';
@@ -35,7 +36,11 @@ import { MatIconModule } from '@angular/material/icon';
         NgxMatSelectSearchModule,
         MatIconModule,
     ],
-  providers: [],
+  providers: [
+    AuthService,
+    // { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    // { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {

@@ -1,40 +1,57 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { AdminLoginGQL, AdminLoginMutationVariables } from '../../@graphql/_generated';
-import { createApolloWithToken } from '../../@graphql/graphql.module';
-import { Apollo } from 'apollo-angular';
-import { HttpLink } from 'apollo-angular/http';
+import { FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+  loading = false;
+  submitted = false;
+  returnUrl!: string;
+  error?: string;
+
   loginForm = this.formBuilder.group({
-    login: '',
-    password: ''
+    username: ['', Validators.required],
+    password: ['', Validators.required]
   });
 
   constructor(
     private formBuilder: FormBuilder,
-    private adminLoginGQL: AdminLoginGQL,
-    private apollo: Apollo,
-    private httpLink: HttpLink,
+    private route: ActivatedRoute,
+    private router: Router,
+    private authService: AuthService,
   ) {
   }
 
-  public async adminLogin() {
-    const values = this.loginForm.getRawValue();
-    const res = await this.adminLoginGQL.mutate({input: values as any}).toPromise();
-
-    const token = res?.data?.adminLogin.token;
-    if (!token) {
-      throw new Error();
-    }
-
-    await this.apollo.removeClient();
-    await this.apollo.create(createApolloWithToken(this.httpLink, token));
+  ngOnInit(): void {
+    // get return url from route parameters or default to '/'
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
+
+  // convenience getter for easy access to form fields
+  get f() {
+    return this.loginForm.controls;
+  }
+
+  async onSubmit() {
+    this.submitted = true;
+
+    // stop here if form is invalid
+    if (this.loginForm.invalid) {
+      return;
+    }
+
+    this.loading = true;
+    await this.authService.adminLogin(this.f.username.value!, this.f.password.value!)
+      .then(res => this.router.navigate([this.returnUrl]))
+      .catch(err => {
+        this.error = err;
+        this.loading = false;
+      });
+  }
 }

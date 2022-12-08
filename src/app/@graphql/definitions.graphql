@@ -42,3 +42,15 @@ query authors($input: AuthorSearchInput!) {
     name
   }
 }
+
+mutation createAuthor($input: AuthorCreateInput!) {
+  createAuthor(input: $input) {
+    id
+  }
+}
+
+mutation createCategory($input: CategoryCreateInput!) {
+  createCategory(input: $input) {
+    id
+  }
+}
