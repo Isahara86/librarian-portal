@@ -15,10 +15,8 @@
   <a mat-menu-item routerLink="/books" routerLinkActive="active" ariaCurrentWhenActive="page">Books</a>
   <a mat-menu-item routerLink="/create-book" routerLinkActive="active" ariaCurrentWhenActive="page">Create Book</a>
   <a mat-menu-item routerLink="/create-author" routerLinkActive="active" ariaCurrentWhenActive="page">Create Author</a>
-  <a mat-menu-item routerLink="/create-category" routerLinkActive="active" ariaCurrentWhenActive="page">Create
-    Category</a>
-  <a mat-menu-item routerLink="/invite-admin" routerLinkActive="active" ariaCurrentWhenActive="page">Invite
-    librarian</a>
+  <a mat-menu-item routerLink="/create-category" routerLinkActive="active" ariaCurrentWhenActive="page">Create Category</a>
+  <a mat-menu-item routerLink="/invite-admin" routerLinkActive="active" ariaCurrentWhenActive="page">Invite librarian</a>
   <a *ngIf="!(auth.admin$ | async)" mat-menu-item routerLink="/login" routerLinkActive="active"
      ariaCurrentWhenActive="page">Login</a>
   <button *ngIf="(auth.admin$ | async)" mat-menu-item (click)="auth.adminLogout()">Logout</button>

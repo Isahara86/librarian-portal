@@ -58,7 +58,7 @@
   </div>
 
 
-  <mat-error *ngIf="error" class="alert alert-danger">{{error}}</mat-error>
+  <mat-error *ngIf="error">{{error}}</mat-error>
   <button style="margin: 20px 0;"
           mat-flat-button color="primary"
           [disabled]="loading || createBookForm.invalid">

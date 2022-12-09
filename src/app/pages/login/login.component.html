@@ -4,7 +4,7 @@
   <app-input controlName="login" label="login"></app-input>
   <app-input controlName="password" label="password"></app-input>
 
-  <mat-error *ngIf="error" class="alert alert-danger">{{error}}</mat-error>
+  <mat-error *ngIf="error">{{error}}</mat-error>
   <button mat-flat-button color="primary" [disabled]="loading || loginForm.invalid">Login</button>
 
 </app-form>
