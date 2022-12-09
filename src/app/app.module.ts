@@ -25,6 +25,7 @@ import { AppFormComponent } from './components/app-form/app-form.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
 import { InviteAdminComponent } from './pages/invite-admin/invite-admin.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 // import { MatListModule } from '@angular/material/list';
 
@@ -57,6 +58,7 @@ import { InviteAdminComponent } from './pages/invite-admin/invite-admin.componen
         MatButtonModule,
         MatCardModule,
         MatMenuModule,
+        MatToolbarModule,
     ],
   providers: [
     AuthService,
