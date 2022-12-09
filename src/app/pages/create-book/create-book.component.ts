@@ -23,7 +23,11 @@ export class CreateBookComponent implements OnInit {
   createBookForm = this.formBuilder.group({
     name: ['', Validators.required],
     description: [''],
-    inventories: this.formBuilder.array<FormGroup<{ serialNumber: FormControl<string | null>; }>>([]),
+    inventories: this.formBuilder.array<FormGroup<{ serialNumber: FormControl<string | null>; }>>([
+      this.formBuilder.group({
+        serialNumber: ['', Validators.required],
+      })
+    ], Validators.required),
   });
 
   languageOptions$ = new BehaviorSubject<MultiselectItem[]>([]);

@@ -10,7 +10,6 @@
   <app-multi-select [availableOptions$]="languageOptions$"
                     [placeholder]='"Lang"'
                     (onSelect)="selectedLangcodes = $event"
-                    [showSelectedValues]="true"
   ></app-multi-select>
   <app-multi-select [availableOptions$]="categoryOptions$"
                     [placeholder]='"Categories"'
@@ -36,6 +35,7 @@
 
 
   <ng-container formArrayName="inventories">
+    <div>Inventories</div>
     <ng-container *ngFor="let inventory of this.createBookForm.controls.inventories.controls; let i = index">
       <div [formGroupName]="i">
 
