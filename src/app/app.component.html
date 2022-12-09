@@ -1,9 +1,12 @@
-<h1 style="margin: 20px;">Librarian App</h1>
+<div style="margin: 20px 20px 0;">
+  <h1 style="margin-bottom: 10px;">Librarian App</h1>
+  <h2 *ngIf="(auth.admin$ | async)?.name">Hello {{(auth.admin$ | async)?.name}}</h2>
+</div>
 
-<button style="margin: 20px;" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+<button style="margin: 0 20px 20px;" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
   <mat-icon>more_vert</mat-icon>
 </button>
-<mat-menu #menu="matMenu" >
+<mat-menu #menu="matMenu">
   <a mat-menu-item routerLink="/books" routerLinkActive="active" ariaCurrentWhenActive="page">Books</a>
   <a mat-menu-item routerLink="/create-book" routerLinkActive="active" ariaCurrentWhenActive="page">Create Book</a>
   <a mat-menu-item routerLink="/create-author" routerLinkActive="active" ariaCurrentWhenActive="page">Create Author</a>
