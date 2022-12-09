@@ -16,7 +16,7 @@ import { environment } from '../../environments/environment';
 // const GQL_WS_ENDPOINT = environment.graphqlWSEndpoint;
 
 
-export function createApolloWithToken(httpLink: HttpLink, token: string): ApolloClientOptions<any> {
+export function createApolloWithToken(httpLink: HttpLink, token?: string): ApolloClientOptions<any> {
   const basic = setContext((operation, context) => ({
     headers: {
       Accept: 'charset=utf-8'

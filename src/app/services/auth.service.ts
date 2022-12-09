@@ -29,11 +29,11 @@ export class AuthService {
     this.admin$ = new BehaviorSubject<{ readonly name: string, readonly token: string } | null>(admin)
 
     if (admin?.token) {
-      this.rebuildApolloWithToken(admin.token);
+      this.rebuildApollo(admin.token);
     }
   }
 
-  private async rebuildApolloWithToken(token: string): Promise<void> {
+  private async rebuildApollo(token?: string): Promise<void> {
     await this.apollo.removeClient();
     await this.apollo.create(createApolloWithToken(this.httpLink, token));
   }
@@ -52,12 +52,13 @@ export class AuthService {
 
     localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(admin));
     this.admin$.next(admin);
-    this.rebuildApolloWithToken(admin.token)
+    await this.rebuildApollo(admin.token)
   }
 
-  adminLogout() {
+  async adminLogout() {
     localStorage.removeItem(ADMIN_STORAGE_KEY);
     this.apollo.removeClient();
+    await this.rebuildApollo();
     this.admin$.next(null);
   }
 }
