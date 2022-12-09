@@ -1,12 +1,14 @@
-<app-form [formGroup]="loginForm" (onSubmit)="onSubmit()">
+<app-form [formGroup]="createForm" (onSubmit)="onSubmit()">
 
   <h2>Invite new librarian</h2>
 
   <app-input controlName="login" label="login"></app-input>
   <app-input controlName="password" label="password"></app-input>
+  <app-input controlName="confirmPassword" label="confirm password"></app-input>
 
-  <mat-error *ngIf="error" class="alert alert-danger">{{error}}</mat-error>
-  <button mat-flat-button color="primary" [disabled]="loading || loginForm.invalid">Login</button>
+  <mat-error *ngIf="error">{{error}}</mat-error>
+  <mat-error *ngIf="createForm.hasError('notSame')">Password and confirmation did not match</mat-error>
+  <button mat-flat-button color="primary" [disabled]="loading || createForm.invalid">Invite</button>
 
 </app-form>
 
