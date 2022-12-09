@@ -54,3 +54,10 @@ mutation createCategory($input: CategoryCreateInput!) {
     id
   }
 }
+
+mutation inviteAdmin($input: AdminInviteInput!) {
+  inviteAdmin(input: $input) {
+    success
+  }
+}
+

@@ -1,5 +1,5 @@
 <app-form [formGroup]="createBookForm" (onSubmit)="createBook()">
-  <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+
   <h2>Create Book</h2>
 
   <app-input controlName="name" label="name"></app-input>
@@ -58,6 +58,7 @@
   </div>
 
 
+  <mat-error *ngIf="error" class="alert alert-danger">{{error}}</mat-error>
   <button style="margin: 20px 0;"
           mat-flat-button color="primary"
           [disabled]="loading || createBookForm.invalid">

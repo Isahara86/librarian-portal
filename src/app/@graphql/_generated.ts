@@ -19,6 +19,12 @@ export type Scalars = {
   Upload: any;
 };
 
+export type AdminInviteInput = {
+  readonly login: Scalars['String'];
+  readonly name: Scalars['String'];
+  readonly password: Scalars['String'];
+};
+
 export type AdminLoginInput = {
   readonly login: Scalars['String'];
   readonly password: Scalars['String'];
@@ -263,6 +269,7 @@ export type Mutation = {
   readonly createBookReservation: BookInventoryReservation;
   readonly createCategory: Category;
   readonly createCustomer: Customer;
+  readonly inviteAdmin: SuccessModel;
   readonly updateAuthor: Author;
   readonly updateBook: Book;
   readonly updateBookReservation: BookInventoryReservation;
@@ -298,6 +305,11 @@ export type MutationCreateCategoryArgs = {
 
 export type MutationCreateCustomerArgs = {
   input: CustomerCreateInput;
+};
+
+
+export type MutationInviteAdminArgs = {
+  input: AdminInviteInput;
 };
 
 
@@ -377,6 +389,10 @@ export type QueryCustomersArgs = {
   input: CustomersSearchInput;
 };
 
+export type SuccessModel = {
+  readonly success: Scalars['Boolean'];
+};
+
 export type BooksListQueryVariables = Exact<{
   input: BookSearchInput;
 }>;
@@ -430,6 +446,13 @@ export type CreateCategoryMutationVariables = Exact<{
 
 
 export type CreateCategoryMutation = { readonly createCategory: { readonly id: number } };
+
+export type InviteAdminMutationVariables = Exact<{
+  input: AdminInviteInput;
+}>;
+
+
+export type InviteAdminMutation = { readonly inviteAdmin: { readonly success: boolean } };
 
 export const BooksListDocument = gql`
     query booksList($input: BookSearchInput!) {
@@ -578,6 +601,24 @@ export const CreateCategoryDocument = gql`
   })
   export class CreateCategoryGQL extends Apollo.Mutation<CreateCategoryMutation, CreateCategoryMutationVariables> {
     override document = CreateCategoryDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const InviteAdminDocument = gql`
+    mutation inviteAdmin($input: AdminInviteInput!) {
+  inviteAdmin(input: $input) {
+    success
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class InviteAdminGQL extends Apollo.Mutation<InviteAdminMutation, InviteAdminMutationVariables> {
+    override document = InviteAdminDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

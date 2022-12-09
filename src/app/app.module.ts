@@ -24,6 +24,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { AppFormComponent } from './components/app-form/app-form.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
+import { InviteAdminComponent } from './pages/invite-admin/invite-admin.component';
 
 // import { MatListModule } from '@angular/material/list';
 
@@ -38,6 +39,7 @@ import { MatMenuModule } from '@angular/material/menu';
     CreateCategoryComponent,
     AppInputComponent,
     AppFormComponent,
+    InviteAdminComponent,
   ],
     imports: [
         BrowserModule,
