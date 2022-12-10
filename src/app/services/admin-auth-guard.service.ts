@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 
 
 @Injectable({providedIn: 'root'})
-export class AuthGuard implements CanActivate {
+export class AdminAuthGuard implements CanActivate {
   constructor(
     private router: Router,
     private authService: AuthService
@@ -12,8 +12,8 @@ export class AuthGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    const currentUser = this.authService.currentUserValue;
-    if (currentUser) {
+    const adminUser = this.authService.admin$.getValue();
+    if (adminUser) {
       // authorised so return true
       return true;
     }
