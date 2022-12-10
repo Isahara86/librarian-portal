@@ -10,4 +10,9 @@
 10. Create book first inventory should not have remove button
 11. Input validation at least 3 symbols
 12. Notify when new version available 
-13. cache-control: no-cache, no-store, max-age=0, must-revalidate
+13. +++ cache-control: no-cache, no-store, max-age=0, must-revalidate 
+14. [13:49, 10/12/2022] Одуванчик: Автор
+    Название книги
+    Описание
+    Инвентарь
+    [13:49, 10/12/2022] Одуванчик: Фото
