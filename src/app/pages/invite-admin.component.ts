@@ -1,12 +1,37 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { InviteAdminGQL } from '../../@graphql/_generated';
+import { AuthService } from '../services/auth.service';
+import { InviteAdminGQL } from '../@graphql/_generated';
+import { pagesCommonImports } from './pages-common-imports';
 
 @Component({
+  standalone: true,
   selector: 'app-invite-admin',
-  templateUrl: './invite-admin.component.html',
+  template: `
+    <app-form [formGroup]="createForm" (onSubmit)="onSubmit()">
+
+      <h2>Invite new librarian</h2>
+
+      <app-input controlName="login" label="login"></app-input>
+      <app-input controlName="password" label="password"></app-input>
+      <app-input controlName="confirmPassword" label="confirm password"></app-input>
+
+      <mat-error *ngIf="error">{{error}}</mat-error>
+      <mat-error *ngIf="createForm.hasError('notSame')">Password and confirmation did not match</mat-error>
+      <button mat-flat-button color="primary" [disabled]="loading || createForm.invalid">Invite</button>
+
+    </app-form>
+  `,
+  imports: [
+    ...pagesCommonImports,
+  ]
 })
 export class InviteAdminComponent implements OnInit {
   loading = false;

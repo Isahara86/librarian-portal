@@ -1,12 +1,22 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
-import { AppModule } from './app/app.module';
+import { bootstrapApplication } from "@angular/platform-browser";
+import { provideRouter, Route } from "@angular/router";
+import { AppComponent } from "./app/app.component";
+import { enableProdMode, importProvidersFrom } from '@angular/core';
 import { environment } from './environments/environment';
+import { GraphQLModule } from './app/@graphql/graphql.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { appRoutes } from './app/app-routes';
 
 if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+bootstrapApplication(AppComponent, {
+  providers: [
+    importProvidersFrom(GraphQLModule),
+    importProvidersFrom(BrowserAnimationsModule),
+    provideRouter(appRoutes),
+  ]
+}).catch((err) =>
+  console.log(err)
+);

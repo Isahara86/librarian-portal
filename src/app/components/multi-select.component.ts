@@ -1,17 +1,71 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { BehaviorSubject, ReplaySubject, Subject, take, takeUntil } from 'rxjs';
-import { UntypedFormControl } from '@angular/forms';
-import { MatSelect } from '@angular/material/select';
+import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
+import { MatSelect, MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { MatIconModule } from '@angular/material/icon';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 
 export interface MultiselectItem {
   id: string;
   name: string;
 }
 
-
 @Component({
+  standalone: true,
   selector: 'app-multi-select',
-  templateUrl: './multi-select.component.html',
+  template: `
+    <div class="wrapper">
+      <div class="inner-wrap">
+        <mat-form-field style="width: 100%;">
+          <mat-select
+            [formControl]="itemCtrl"
+            (valueChange)="onSelect.emit($event)"
+            placeholder="{{placeholder}}"
+            [multiple]="true"
+            #singleSelect
+          >
+            <mat-option>
+              <ngx-mat-select-search
+                [formControl]="itemFilterCtrl"
+                placeholderLabel="Find {{placeholder}}..."
+                noEntriesFoundLabel="'no matching found'"
+                [showToggleAllCheckbox]="checkIfShowCreateButton(filteredItems| async)"
+
+                toggleAllCheckboxTooltipMessage="Select / Unselect All"
+                [toggleAllCheckboxIndeterminate]="isIndeterminate"
+                [toggleAllCheckboxChecked]="isChecked"
+                (toggleAll)="onCreate()"
+              >
+                <mat-icon ngxMatSelectSearchClear>delete</mat-icon>
+              </ngx-mat-select-search>
+            </mat-option>
+
+            <mat-option *ngFor="let car of filteredItems | async" [value]="car">
+              {{ car.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div *ngIf="showSelectedValues" class="inner-wrap">
+        <h3>Selected Values</h3>
+        <ul *ngFor="let item of itemCtrl?.value">
+          <li>{{ item.name }}</li>
+        </ul>
+      </div>
+    </div>
+  `,
+  imports: [
+    MatFormFieldModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+    NgxMatSelectSearchModule,
+    MatIconModule,
+    AsyncPipe,
+    NgIf,
+    NgForOf,
+  ]
 })
 export class MultiSelectComponent {
   @Output() onSelect = new EventEmitter<MultiselectItem[]>();
@@ -39,9 +93,6 @@ export class MultiSelectComponent {
   /** flags to set the toggle all checkbox state */
   isIndeterminate = false;
   isChecked = false;
-
-  constructor() {
-  }
 
   ngOnInit() {
     // // set initial selection
@@ -130,7 +181,7 @@ export class MultiSelectComponent {
       return false
     }
 
-    const hasSameAuthor = values.some(mi=>mi.name===searchValue)
+    const hasSameAuthor = values.some(mi => mi.name === searchValue)
 
     return !hasSameAuthor;
   }

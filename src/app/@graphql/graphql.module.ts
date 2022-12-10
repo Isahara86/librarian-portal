@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
@@ -137,7 +136,6 @@ function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
 
 @NgModule({
   imports: [
-    CommonModule,
     HttpClientModule,
     ApolloModule,
   ],
