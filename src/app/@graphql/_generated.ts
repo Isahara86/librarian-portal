@@ -398,7 +398,7 @@ export type BooksListQueryVariables = Exact<{
 }>;
 
 
-export type BooksListQuery = { readonly books: ReadonlyArray<{ readonly name: string, readonly previewUrl?: string | null, readonly description?: string | null, readonly isAvailable: boolean }> };
+export type BooksListQuery = { readonly books: ReadonlyArray<{ readonly id: number, readonly name: string, readonly previewUrl?: string | null, readonly description?: string | null, readonly isAvailable: boolean }> };
 
 export type AdminLoginMutationVariables = Exact<{
   input: AdminLoginInput;
@@ -471,6 +471,7 @@ export type BookDetailsQuery = { readonly bookDetails: { readonly id: number, re
 export const BooksListDocument = gql`
     query booksList($input: BookSearchInput!) {
   books(input: $input) {
+    id
     name
     previewUrl
     description

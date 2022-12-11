@@ -2,6 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { BooksListGQL } from '../@graphql/_generated';
 import { first } from 'rxjs';
 import { pagesCommonImports } from './pages-common-imports';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+
+interface BookInfo {
+  readonly id: number,
+  readonly previewUrl?: string | null,
+  readonly name: string,
+  readonly description?: string | null,
+  readonly isAvailable: boolean
+}
 
 @Component({
   standalone: true,
@@ -20,22 +30,27 @@ import { pagesCommonImports } from './pages-common-imports';
         </td>
       </ng-container>
 
-      <!-- Name Column -->
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef> Name</th>
         <td mat-cell *matCellDef="let element"> {{element.name}} </td>
       </ng-container>
 
-      <!-- Weight Column -->
       <ng-container matColumnDef="description">
         <th mat-header-cell *matHeaderCellDef> Description</th>
         <td mat-cell *matCellDef="let element"> {{element.description}} </td>
       </ng-container>
 
-      <!-- Symbol Column -->
       <ng-container matColumnDef="isAvailable">
         <th mat-header-cell *matHeaderCellDef> isAvailable</th>
         <td mat-cell *matCellDef="let element"> {{element.isAvailable}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Actions">
+        <th mat-header-cell *matHeaderCellDef> Actions</th>
+        <td mat-cell *matCellDef="let element">
+          <mat-icon *ngIf="authService.admin$ | async" [routerLink]="['update-book', element.id]"
+                    fontIcon="edit"></mat-icon>
+        </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -44,6 +59,7 @@ import { pagesCommonImports } from './pages-common-imports';
   `,
   imports: [
     ...pagesCommonImports,
+    RouterLink,
   ],
   styles: [`
     table {
@@ -52,15 +68,19 @@ import { pagesCommonImports } from './pages-common-imports';
   `]
 })
 export class BooksListComponent implements OnInit {
-  books: ReadonlyArray<{ readonly previewUrl?: string | null, readonly name: string, readonly description?: string | null, readonly isAvailable: boolean }> = [];
+  books: ReadonlyArray<BookInfo> = [];
   displayedColumns: string[] = [
     'previewUrl',
     'name',
     'description',
-    'isAvailable'
+    'isAvailable',
+    'Actions',
   ];
 
-  constructor(private booksListGQL: BooksListGQL) {
+  constructor(
+    private booksListGQL: BooksListGQL,
+    readonly authService: AuthService,
+  ) {
   }
 
   ngOnInit(): void {

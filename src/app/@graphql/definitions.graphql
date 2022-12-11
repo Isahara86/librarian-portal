@@ -1,5 +1,6 @@
 query booksList ($input: BookSearchInput!) {
   books(input: $input) {
+    id
     name
     previewUrl
     description
