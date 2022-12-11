@@ -58,7 +58,9 @@ import { AsyncPipe, NgIf } from '@angular/common';
         </mat-toolbar>
 
         <!--         The routed views render in the <router-outlet>-->
-        <router-outlet></router-outlet>
+        <div style="overflow-x: scroll">
+          <router-outlet></router-outlet>
+        </div>
 
         <p style="position: absolute; bottom: 0; right: 0;"><span
           style="padding-right: 20px">{{appVersion}}</span></p>
