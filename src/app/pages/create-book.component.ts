@@ -8,7 +8,7 @@ import {
   LanguagesGQL,
 } from '../@graphql/_generated';
 import { Apollo } from 'apollo-angular';
-import { MultiselectItem } from '../components/multi-select.component';
+import { MultiselectInitialState, MultiselectItem } from '../components/multi-select.component';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { pagesCommonImports } from './pages-common-imports';
@@ -26,16 +26,16 @@ import { pagesCommonImports } from './pages-common-imports';
       <app-input controlName="description" label="description"></app-input>
 
 
-      <app-multi-select [availableOptions$]="languageOptions$"
+      <app-multi-select [initialState$]="initialLanguageState$"
                         [placeholder]='"Lang"'
                         (onSelect)="selectedLangcodes = $event"
       ></app-multi-select>
-      <app-multi-select [availableOptions$]="categoryOptions$"
+      <app-multi-select [initialState$]="initialCategoryState$"
                         [placeholder]='"Categories"'
                         (onSelect)="selectedCategories = $event"
                         [createResource]="createCategory"
       ></app-multi-select>
-      <app-multi-select [availableOptions$]="authorOptions$"
+      <app-multi-select [initialState$]="initialAuthorState$"
                         [placeholder]='"Authors"'
                         (onSelect)="selectedAuthors = $event"
                         [createResource]="createAuthor"
@@ -128,11 +128,11 @@ export class CreateBookComponent implements OnInit {
     ], Validators.required),
   });
 
-  languageOptions$ = new BehaviorSubject<MultiselectItem[]>([]);
+  initialLanguageState$ = new BehaviorSubject<MultiselectInitialState>({available: [], selected: []});
   selectedLangcodes: MultiselectItem[] = [];
-  categoryOptions$ = new BehaviorSubject<MultiselectItem[]>([]);
+  initialCategoryState$ = new BehaviorSubject<MultiselectInitialState>({available: [], selected: []});
   selectedCategories: MultiselectItem[] = [];
-  authorOptions$ = new BehaviorSubject<MultiselectItem[]>([]);
+  initialAuthorState$ = new BehaviorSubject<MultiselectInitialState>({available: [], selected: []});
   selectedAuthors: MultiselectItem[] = [];
 
   file?: File;
@@ -163,17 +163,20 @@ export class CreateBookComponent implements OnInit {
 
   async fetchLanguages(): Promise<void> {
     const availableLanguages = await this.languagesGQL.fetch().toPromise();
-    this.languageOptions$.next(availableLanguages!.data.languages.map(({code, name}) => ({id: code, name})));
+    const available = availableLanguages!.data.languages.map(({code, name}) => ({id: code, name}));
+    this.initialLanguageState$.next({available, selected: []});
   }
 
   async fetchCategories(): Promise<void> {
     const categories = await this.categoriesGQL.fetch({input: {offset: 0, limit: 100}}).toPromise();
-    this.categoryOptions$.next(categories!.data.categories.map(({id, name}) => ({id: id.toString(), name})));
+    const available = categories!.data.categories.map(({id, name}) => ({id: id.toString(), name}))
+    this.initialCategoryState$.next({available, selected: []});
   }
 
   async fetchAuthors(): Promise<void> {
     const authors = await this.authorsGQL.fetch({input: {offset: 0, limit: 500}}).toPromise();
-    this.authorOptions$.next(authors!.data.authors.map(({id, name}) => ({id: id.toString(), name})));
+    const available = authors!.data.authors.map(({id, name}) => ({id: id.toString(), name}));
+    this.initialAuthorState$.next({available, selected: []});
   }
 
   get lessons() {

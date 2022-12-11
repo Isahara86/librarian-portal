@@ -12,6 +12,12 @@ export interface MultiselectItem {
   name: string;
 }
 
+export interface MultiselectInitialState {
+  available: MultiselectItem[],
+  selected: MultiselectItem[]
+}
+
+
 @Component({
   standalone: true,
   selector: 'app-multi-select',
@@ -42,8 +48,8 @@ export interface MultiselectItem {
               </ngx-mat-select-search>
             </mat-option>
 
-            <mat-option *ngFor="let car of filteredItems | async" [value]="car">
-              {{ car.name }}
+            <mat-option *ngFor="let selectItem of filteredItems | async" [value]="selectItem">
+              {{ selectItem.name }}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -69,7 +75,7 @@ export interface MultiselectItem {
 })
 export class MultiSelectComponent {
   @Output() onSelect = new EventEmitter<MultiselectItem[]>();
-  @Input() availableOptions$!: BehaviorSubject<MultiselectItem[]>;
+  @Input() initialState$!: BehaviorSubject<MultiselectInitialState>;
   @Input() placeholder?: string;
   @Input() showSelectedValues = false;
   @Input() createResource?: (name: string) => Promise<void>;
@@ -98,11 +104,12 @@ export class MultiSelectComponent {
     // // set initial selection
     // this.carCtrl.setValue([this.cars[1], this.cars[2]]);
 
-    this.availableOptions$
+    this.initialState$
       .pipe(takeUntil(this._onDestroy))
-      .subscribe((items) => {
-        this.availableItems = items;
-        // load the initial car list
+      .subscribe(({available, selected}) => {
+        this.availableItems = available;
+        this.itemCtrl.patchValue(selected);
+        // load the initial list
         this.filteredItems.next(this.availableItems.slice());
       });
 
