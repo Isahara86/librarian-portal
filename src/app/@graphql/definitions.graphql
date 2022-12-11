@@ -61,3 +61,33 @@ mutation inviteAdmin($input: AdminInviteInput!) {
   }
 }
 
+mutation updateBook($input: BookUpdateInput!) {
+  updateBook(input: $input) {
+    id
+  }
+}
+
+query bookDetails($id: Int!) {
+  bookDetails(id: $id) {
+    id
+    name
+    description
+    previewUrl
+    categories {
+      id
+      name
+    }
+    authors {
+      id
+      name
+    }
+    languages {
+      code
+      name
+    }
+    inventories {
+      id
+      serialNumber
+    }
+  }
+}

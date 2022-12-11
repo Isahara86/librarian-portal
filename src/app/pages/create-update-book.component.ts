@@ -2,24 +2,31 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {
   AuthorsGQL,
-  CategoriesGQL, CreateAuthorGQL,
+  BookDetailsGQL,
+  BookDetailsQuery,
+  BookInventoryCreateInput,
+  CategoriesGQL,
+  CreateAuthorGQL,
   CreateBookGQL,
-  CreateBookMutationVariables, CreateCategoryGQL,
+  CreateBookMutationVariables,
+  CreateCategoryGQL,
   LanguagesGQL,
+  UpdateBookGQL,
+  UpdateBookMutationVariables,
 } from '../@graphql/_generated';
 import { Apollo } from 'apollo-angular';
 import { MultiselectInitialState, MultiselectItem } from '../components/multi-select.component';
 import { BehaviorSubject } from 'rxjs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { pagesCommonImports } from './pages-common-imports';
 
 @Component({
   standalone: true,
   selector: 'app-create-book',
   template: `
-    <app-form [formGroup]="createBookForm" (onSubmit)="createBook()">
+    <app-form [formGroup]="createBookForm" (onSubmit)="bookForUpdate ? updateBook() : createBook()">
 
-      <h2>Create Book</h2>
+      <h2>{{bookForUpdate ? 'Update Book' : 'Create Book'}}</h2>
 
       <app-input controlName="name" label="name"></app-input>
 
@@ -62,11 +69,13 @@ import { pagesCommonImports } from './pages-common-imports';
 
             <mat-form-field appearance="fill">
               <input matInput
+                     [value]="inventory.controls.serialNumber.value"
                      formControlName="serialNumber"
                      placeholder="Serial number">
             </mat-form-field>
 
-            <mat-icon class="delete-btn" (click)="removeInventory(i)">
+            <mat-icon *ngIf="checkIsInventoryNew(i)" class="delete-btn"
+                      (click)="removeInventory(i)">
               delete_forever
             </mat-icon>
           </div>
@@ -85,7 +94,7 @@ import { pagesCommonImports } from './pages-common-imports';
       <button style="margin: 20px 0;"
               mat-flat-button color="primary"
               [disabled]="loading || createBookForm.invalid">
-        Create
+        {{bookForUpdate ? 'Save' : 'Create'}}
       </button>
 
 
@@ -115,16 +124,15 @@ import { pagesCommonImports } from './pages-common-imports';
     ...pagesCommonImports,
   ]
 })
-export class CreateBookComponent implements OnInit {
+export class CreateUpdateBookComponent implements OnInit {
   loading = false;
   error?: string;
+  bookForUpdate?: BookDetailsQuery;
   createBookForm = this.formBuilder.group({
     name: ['', Validators.required],
     description: [''],
     inventories: this.formBuilder.array<FormGroup<{ serialNumber: FormControl<string | null>; }>>([
-      this.formBuilder.group({
-        serialNumber: ['', Validators.required],
-      })
+      this.buildFormInventoryItem(),
     ], Validators.required),
   });
 
@@ -136,11 +144,13 @@ export class CreateBookComponent implements OnInit {
   selectedAuthors: MultiselectItem[] = [];
 
   file?: File;
-  preview?: string;
+  preview?: string | null;
 
   constructor(
     private formBuilder: FormBuilder,
     private createBookGQL: CreateBookGQL,
+    private updateBookGQL: UpdateBookGQL,
+    private bookDetailsGQL: BookDetailsGQL,
     private languagesGQL: LanguagesGQL,
     private categoriesGQL: CategoriesGQL,
     private authorsGQL: AuthorsGQL,
@@ -148,47 +158,105 @@ export class CreateBookComponent implements OnInit {
     private createCategoryGQL: CreateCategoryGQL,
     private apollo: Apollo,
     private router: Router,
+    private route: ActivatedRoute,
   ) {
+    this.createAuthor = this.createAuthor.bind(this);
+    this.createCategory = this.createCategory.bind(this);
   }
 
   async ngOnInit(): Promise<void> {
-    this.createAuthor = this.createAuthor.bind(this);
-    this.createCategory = this.createCategory.bind(this);
+    const {book, bookFindError} = await this.fetchBookDetails();
+
+    if (bookFindError) {
+      this.error = bookFindError;
+      return;
+    }
+
+
+    if (book) {
+      this.bookForUpdate = book;
+      this.fillBookForm(book);
+    }
+
     await Promise.all([
-      this.fetchLanguages(),
-      this.fetchCategories(),
-      this.fetchAuthors(),
+      this.fetchLanguages(book?.bookDetails.languages?.map(({code, name}) => ({id: code, name}))),
+      this.fetchCategories(book?.bookDetails.categories.map(({id, name}) => ({id: id.toString(), name}))),
+      this.fetchAuthors(book?.bookDetails.authors.map(({id, name}) => ({id: id.toString(), name}))),
     ]);
   }
 
-  async fetchLanguages(): Promise<void> {
+  fillBookForm(book: BookDetailsQuery) {
+    this.createBookForm.controls.name.patchValue(book.bookDetails.name);
+    if (book.bookDetails.description) {
+
+      this.createBookForm.controls.description.patchValue(book.bookDetails.description);
+    }
+
+    this.preview = book.bookDetails.previewUrl;
+
+    if (book.bookDetails.inventories.length) {
+      this.createBookForm.controls.inventories.controls[0].patchValue(book.bookDetails.inventories[0]);
+      for (let i = 1; i < book.bookDetails.inventories.length; i++) {
+        this.addInventory(book.bookDetails.inventories[i].serialNumber)
+      }
+
+    }
+  }
+
+  async fetchBookDetails(): Promise<{ book?: BookDetailsQuery, bookFindError?: string }> {
+    const result: { book?: BookDetailsQuery, bookFindError?: string } = {
+      book: undefined,
+      bookFindError: undefined,
+    };
+
+    const bookIdParam = this.route.snapshot.paramMap.get('bookId')
+    if (!bookIdParam) {
+      return result;
+    }
+
+    const bookIdFromRoute = Number(bookIdParam);
+
+    if (Number.isInteger(bookIdFromRoute)) {
+      const res = await this.bookDetailsGQL.fetch({id: bookIdFromRoute}).toPromise();
+      if (res?.data) {
+        result.book = res?.data;
+      } else {
+        result.bookFindError = res?.error?.name;
+      }
+    } else {
+      result.bookFindError = 'Invalid book id'
+    }
+
+    return result;
+  }
+
+  async fetchLanguages(selected: MultiselectItem[] = []): Promise<void> {
     const availableLanguages = await this.languagesGQL.fetch().toPromise();
     const available = availableLanguages!.data.languages.map(({code, name}) => ({id: code, name}));
-    this.initialLanguageState$.next({available, selected: []});
+    this.initialLanguageState$.next({available, selected});
   }
 
-  async fetchCategories(): Promise<void> {
+  async fetchCategories(selected: MultiselectItem[] = []): Promise<void> {
     const categories = await this.categoriesGQL.fetch({input: {offset: 0, limit: 100}}).toPromise();
     const available = categories!.data.categories.map(({id, name}) => ({id: id.toString(), name}))
-    this.initialCategoryState$.next({available, selected: []});
+    this.initialCategoryState$.next({available, selected});
   }
 
-  async fetchAuthors(): Promise<void> {
+  async fetchAuthors(selected: MultiselectItem[] = []): Promise<void> {
     const authors = await this.authorsGQL.fetch({input: {offset: 0, limit: 500}}).toPromise();
     const available = authors!.data.authors.map(({id, name}) => ({id: id.toString(), name}));
-    this.initialAuthorState$.next({available, selected: []});
+    this.initialAuthorState$.next({available, selected});
   }
 
-  get lessons() {
-    return this.createBookForm.controls.inventories as any;
-  }
-
-  addInventory(): void {
-    const inventory = this.formBuilder.group({
-      serialNumber: ['', Validators.required],
-    });
-
+  addInventory(serialNumber: string = ''): void {
+    const inventory = this.buildFormInventoryItem(serialNumber);
     this.createBookForm.controls.inventories.push(inventory)
+  }
+
+  buildFormInventoryItem(serialNumber: string = '') {
+    return this.formBuilder.group({
+      serialNumber: [serialNumber, [Validators.required, Validators.minLength(3)]],
+    });
   }
 
   removeInventory(inventoryIndex: number): void {
@@ -210,9 +278,54 @@ export class CreateBookComponent implements OnInit {
     reader.readAsDataURL(this.file)
   }
 
+  async updateBook(): Promise<void> {
+    if (!this.bookForUpdate) {
+      return;
+    }
+    const formValues = this.createBookForm.getRawValue()
+
+    const existingInventories = this.bookForUpdate.bookDetails.inventories;
+
+    const variables: UpdateBookMutationVariables = {
+      input: {
+        id: this.bookForUpdate.bookDetails.id,
+        name: formValues.name!,
+        description: formValues.description,
+        preview: this.file,
+        authorIds: this.selectedAuthors.map(a => +a.id),
+        categoryIds: this.selectedCategories.map(c => +c.id),
+        newInventories: formValues.inventories
+          .filter((inv, i) => {
+            console.log(i+1 > existingInventories.length && inv.serialNumber, i+1 , existingInventories.length , inv.serialNumber)
+            return i+1 > existingInventories.length && inv.serialNumber;
+          })
+          .map(inv => ({serialNumber: inv.serialNumber as string})),
+        updatedInventories: existingInventories
+          .map((inv, index) => ({id: inv.id, serialNumber: formValues.inventories[index].serialNumber as string})),
+        languages: this.selectedLangcodes.map(l => l.id),
+      }
+    };
+
+    const res = await this.apollo.mutate<any>({
+      mutation: this.updateBookGQL.document,
+      variables,
+      context: {
+        useMultipart: true
+      }
+    }).toPromise()
+      .then(res => this.router.navigate(['']))
+      .catch(err => {
+        this.error = err;
+        this.loading = false;
+      });
+  }
 
   async createBook() {
     const formValues = this.createBookForm.getRawValue()
+
+    const inventories: ReadonlyArray<BookInventoryCreateInput> = formValues
+      .inventories
+      .map(inv => ({serialNumber: inv.serialNumber as string}));
 
     const variables: CreateBookMutationVariables = {
       input: {
@@ -221,7 +334,7 @@ export class CreateBookComponent implements OnInit {
         preview: this.file,
         authorIds: this.selectedAuthors.map(a => +a.id),
         categoryIds: this.selectedCategories.map(c => +c.id),
-        inventories: formValues.inventories as any,
+        inventories,
         languages: this.selectedLangcodes.map(l => l.id),
       }
     };
@@ -273,5 +386,12 @@ export class CreateBookComponent implements OnInit {
         this.error = err;
         this.loading = false;
       });
+  }
+
+  checkIsInventoryNew(index: number): boolean {
+    return !this
+      .bookForUpdate
+      ?.bookDetails
+      .inventories[index];
   }
 }

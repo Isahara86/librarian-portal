@@ -147,7 +147,7 @@ export type BookInventoryReservationUpdateInput = {
 };
 
 export type BookInventoryUpdateInput = {
-  readonly deleteReason: Scalars['String'];
+  readonly deleteReason?: InputMaybe<Scalars['String']>;
   readonly id: Scalars['Int'];
   readonly serialNumber: Scalars['String'];
 };
@@ -454,6 +454,20 @@ export type InviteAdminMutationVariables = Exact<{
 
 export type InviteAdminMutation = { readonly inviteAdmin: { readonly success: boolean } };
 
+export type UpdateBookMutationVariables = Exact<{
+  input: BookUpdateInput;
+}>;
+
+
+export type UpdateBookMutation = { readonly updateBook: { readonly id: number } };
+
+export type BookDetailsQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type BookDetailsQuery = { readonly bookDetails: { readonly id: number, readonly name: string, readonly description?: string | null, readonly previewUrl?: string | null, readonly categories: ReadonlyArray<{ readonly id: number, readonly name: string }>, readonly authors: ReadonlyArray<{ readonly id: number, readonly name: string }>, readonly languages: ReadonlyArray<{ readonly code: string, readonly name: string }>, readonly inventories: ReadonlyArray<{ readonly id: number, readonly serialNumber: string }> } };
+
 export const BooksListDocument = gql`
     query booksList($input: BookSearchInput!) {
   books(input: $input) {
@@ -619,6 +633,61 @@ export const InviteAdminDocument = gql`
   })
   export class InviteAdminGQL extends Apollo.Mutation<InviteAdminMutation, InviteAdminMutationVariables> {
     override document = InviteAdminDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateBookDocument = gql`
+    mutation updateBook($input: BookUpdateInput!) {
+  updateBook(input: $input) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateBookGQL extends Apollo.Mutation<UpdateBookMutation, UpdateBookMutationVariables> {
+    override document = UpdateBookDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const BookDetailsDocument = gql`
+    query bookDetails($id: Int!) {
+  bookDetails(id: $id) {
+    id
+    name
+    description
+    previewUrl
+    categories {
+      id
+      name
+    }
+    authors {
+      id
+      name
+    }
+    languages {
+      code
+      name
+    }
+    inventories {
+      id
+      serialNumber
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class BookDetailsGQL extends Apollo.Query<BookDetailsQuery, BookDetailsQueryVariables> {
+    override document = BookDetailsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
