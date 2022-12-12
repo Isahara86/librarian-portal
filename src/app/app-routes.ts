@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdminAuthGuard } from './services/admin-auth-guard.service';
+import { TwoFactorAuthComponent } from './pages/two-factor-auth.component';
 
 export const appRoutes: Routes = [
   {
@@ -18,6 +19,7 @@ export const appRoutes: Routes = [
   {path: 'create-category',  loadComponent: () => import("./pages/create-category.component").then((m) => m.CreateCategoryComponent), canActivate: [AdminAuthGuard]},
   {path: 'invite-admin',  loadComponent: () => import("./pages/invite-admin.component").then((m) => m.InviteAdminComponent), canActivate: [AdminAuthGuard]},
   {path: 'login', loadComponent: () => import("./pages/login.component").then((m) => m.LoginComponent)},
+  {path: '2fa-setup', loadComponent: () => import("./pages/two-factor-auth.component").then((m) => m.TwoFactorAuthComponent)},
 
   {path: '**', redirectTo: ''},
 ];
