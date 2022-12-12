@@ -22,32 +22,57 @@ import { AsyncPipe, NgIf } from '@angular/common';
   ],
   template: `
     <div style="width: 100vw; height: 100vh; max-height: 100vh; max-width: 100vw; overflow:scroll;">
-
       <div style="position: relative; display: flex; flex-direction: column; min-height: 100vh;">
-
         <mat-toolbar color="primary">
-          <button mat-icon-button
-                  class="example-icon"
-                  aria-label="Example icon-button with menu icon"
-                  [matMenuTriggerFor]="menu">
+          <button
+            mat-icon-button
+            class="example-icon"
+            aria-label="Example icon-button with menu icon"
+            [matMenuTriggerFor]="menu"
+          >
             <mat-icon>menu</mat-icon>
           </button>
 
           <mat-menu #menu="matMenu">
             <a mat-menu-item routerLink="" routerLinkActive="active">Books</a>
-            <a *ngIf="(auth.admin$ | async)"
-               mat-menu-item routerLink="/create-book" routerLinkActive="active">Create Book</a>
-            <a *ngIf="(auth.admin$ | async)"
-               mat-menu-item routerLink="/create-author" routerLinkActive="active">Create Author</a>
-            <a *ngIf="(auth.admin$ | async)"
-               mat-menu-item routerLink="/create-category" routerLinkActive="active" class="mat-primary">Create
-              Category</a>
-            <a *ngIf="(auth.admin$ | async)"
-               mat-menu-item routerLink="/invite-admin" routerLinkActive="active">Invite librarian</a>
-            <a *ngIf="!(auth.admin$ | async)"
-               mat-menu-item routerLink="/login" routerLinkActive="active">Login</a>
-            <button *ngIf="(auth.admin$ | async)"
-                    mat-menu-item (click)="auth.adminLogout()">Logout
+            <a
+              *ngIf="auth.admin$ | async"
+              mat-menu-item
+              routerLink="/create-book"
+              routerLinkActive="active"
+              >Create Book</a
+            >
+            <a
+              *ngIf="auth.admin$ | async"
+              mat-menu-item
+              routerLink="/create-author"
+              routerLinkActive="active"
+              >Create Author</a
+            >
+            <a
+              *ngIf="auth.admin$ | async"
+              mat-menu-item
+              routerLink="/create-category"
+              routerLinkActive="active"
+              class="mat-primary"
+              >Create Category</a
+            >
+            <a
+              *ngIf="auth.admin$ | async"
+              mat-menu-item
+              routerLink="/invite-admin"
+              routerLinkActive="active"
+              >Invite librarian</a
+            >
+            <a
+              *ngIf="(auth.admin$ | async) !== null"
+              mat-menu-item
+              routerLink="/login"
+              routerLinkActive="active"
+              >Login</a
+            >
+            <button *ngIf="auth.admin$ | async" mat-menu-item (click)="auth.adminLogout()">
+              Logout
             </button>
           </mat-menu>
 
@@ -62,18 +87,15 @@ import { AsyncPipe, NgIf } from '@angular/common';
           <router-outlet></router-outlet>
         </div>
 
-        <p style="position: absolute; bottom: 0; right: 0;"><span
-          style="padding-right: 20px">{{appVersion}}</span></p>
-
-
+        <p style="position: absolute; bottom: 0; right: 0;">
+          <span style="padding-right: 20px">{{ appVersion }}</span>
+        </p>
       </div>
-
     </div>
-  `
+  `,
 })
 export class AppComponent {
   appVersion = packageJson.version;
 
-  constructor(public readonly auth: AuthService) {
-  }
+  constructor(public readonly auth: AuthService) {}
 }

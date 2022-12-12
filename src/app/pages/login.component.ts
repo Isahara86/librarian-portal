@@ -1,27 +1,37 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { pagesCommonImports } from './pages-common-imports';
+import { CommonModule } from '@angular/common';
+import { AppInputComponent } from '../components/app-input.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { AppFormComponent } from '../components/app-form.component';
 
 @Component({
   standalone: true,
   selector: 'app-login',
   template: `
-    <app-form [formGroup]="loginForm" (onSubmit)="onSubmit()">
+    <app-form [formGroup]="loginForm" (formSubmit)="onSubmit()">
       <h2>Login</h2>
 
       <app-input controlName="login" label="login"></app-input>
       <app-input controlName="password" label="password"></app-input>
 
-      <mat-error *ngIf="error">{{error}}</mat-error>
-      <button mat-flat-button color="primary" [disabled]="loading || loginForm.invalid">Login</button>
-
+      <mat-error *ngIf="error">{{ error }}</mat-error>
+      <button mat-flat-button color="primary" [disabled]="loading || loginForm.invalid">
+        Login
+      </button>
     </app-form>
   `,
   imports: [
-    ...pagesCommonImports,
-  ]
+    CommonModule,
+    ReactiveFormsModule,
+    AppInputComponent,
+    MatFormFieldModule,
+    MatButtonModule,
+    AppFormComponent,
+  ],
 })
 export class LoginComponent implements OnInit {
   loading = false;
@@ -31,7 +41,7 @@ export class LoginComponent implements OnInit {
 
   loginForm = this.formBuilder.group({
     login: ['', Validators.required],
-    password: ['', Validators.required]
+    password: ['', Validators.required],
   });
 
   constructor(
@@ -39,14 +49,12 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
-
 
   // convenience getter for easy access to form fields
   get f() {
@@ -57,13 +65,15 @@ export class LoginComponent implements OnInit {
     this.submitted = true;
 
     // stop here if form is invalid
-    if (this.loginForm.invalid) {
+    if (this.loginForm.invalid || !this.f.login.value || !this.f.password.value) {
       return;
     }
 
     this.loading = true;
-    await this.authService.adminLogin(this.f.login.value!, this.f.password.value!)
-      .then(res => this.router.navigate([this.returnUrl]))
+
+    await this.authService
+      .adminLogin(this.f.login.value, this.f.password.value)
+      .then(() => this.router.navigate([this.returnUrl]))
       .catch(err => {
         this.error = err;
         this.loading = false;

@@ -1,6 +1,6 @@
-import { bootstrapApplication } from "@angular/platform-browser";
-import { provideRouter, Route } from "@angular/router";
-import { AppComponent } from "./app/app.component";
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
+import { AppComponent } from './app/app.component';
 import { enableProdMode, importProvidersFrom } from '@angular/core';
 import { environment } from './environments/environment';
 import { GraphQLModule } from './app/@graphql/graphql.module';
@@ -16,7 +16,5 @@ bootstrapApplication(AppComponent, {
     importProvidersFrom(GraphQLModule),
     importProvidersFrom(BrowserAnimationsModule),
     provideRouter(appRoutes),
-  ]
-}).catch((err) =>
-  console.log(err)
-);
+  ],
+}).catch(err => console.log(err));

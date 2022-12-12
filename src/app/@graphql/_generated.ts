@@ -277,61 +277,49 @@ export type Mutation = {
   readonly updateCustomer: Customer;
 };
 
-
 export type MutationAdminLoginArgs = {
   input: AdminLoginInput;
 };
-
 
 export type MutationCreateAuthorArgs = {
   input: AuthorCreateInput;
 };
 
-
 export type MutationCreateBookArgs = {
   input: BookCreateInput;
 };
-
 
 export type MutationCreateBookReservationArgs = {
   input: BookInventoryReservationCreateInput;
 };
 
-
 export type MutationCreateCategoryArgs = {
   input: CategoryCreateInput;
 };
-
 
 export type MutationCreateCustomerArgs = {
   input: CustomerCreateInput;
 };
 
-
 export type MutationInviteAdminArgs = {
   input: AdminInviteInput;
 };
-
 
 export type MutationUpdateAuthorArgs = {
   input: AuthorUpdateInput;
 };
 
-
 export type MutationUpdateBookArgs = {
   input: BookUpdateInput;
 };
-
 
 export type MutationUpdateBookReservationArgs = {
   input: BookInventoryReservationUpdateInput;
 };
 
-
 export type MutationUpdateCategoryArgs = {
   input: CategoryUpdateInput;
 };
-
 
 export type MutationUpdateCustomerArgs = {
   input: CustomerUpdateInput;
@@ -349,41 +337,33 @@ export type Query = {
   readonly languages: ReadonlyArray<Language>;
 };
 
-
 export type QueryAuthorsArgs = {
   input: AuthorSearchInput;
 };
-
 
 export type QueryBookDetailsArgs = {
   id: Scalars['Int'];
 };
 
-
 export type QueryBookReservationHistoryArgs = {
   input: BookInventoryReservationSearchInput;
 };
-
 
 export type QueryBooksArgs = {
   input: BookSearchInput;
 };
 
-
 export type QueryCategoriesArgs = {
   input: CategorySearchInput;
 };
-
 
 export type QueryCustomerDetailsArgs = {
   id: Scalars['Int'];
 };
 
-
 export type QueryCustomerReservationHistoryArgs = {
   input: CustomerReservationsSearchInput;
 };
-
 
 export type QueryCustomersArgs = {
   input: CustomersSearchInput;
@@ -397,46 +377,59 @@ export type BooksListQueryVariables = Exact<{
   input: BookSearchInput;
 }>;
 
-
-export type BooksListQuery = { readonly books: ReadonlyArray<{ readonly id: number, readonly name: string, readonly previewUrl?: string | null, readonly description?: string | null, readonly isAvailable: boolean }> };
+export type BooksListQuery = {
+  readonly books: ReadonlyArray<{
+    readonly id: number;
+    readonly name: string;
+    readonly previewUrl?: string | null;
+    readonly description?: string | null;
+    readonly isAvailable: boolean;
+  }>;
+};
 
 export type AdminLoginMutationVariables = Exact<{
   input: AdminLoginInput;
 }>;
 
-
-export type AdminLoginMutation = { readonly adminLogin: { readonly name: string, readonly token: string } };
+export type AdminLoginMutation = {
+  readonly adminLogin: { readonly name: string; readonly token: string };
+};
 
 export type CreateBookMutationVariables = Exact<{
   input: BookCreateInput;
 }>;
 
-
 export type CreateBookMutation = { readonly createBook: { readonly id: number } };
 
-export type LanguagesQueryVariables = Exact<{ [key: string]: never; }>;
+export type LanguagesQueryVariables = Exact<{ [key: string]: never }>;
 
-
-export type LanguagesQuery = { readonly languages: ReadonlyArray<{ readonly code: string, readonly name: string, readonly nativeName: string }> };
+export type LanguagesQuery = {
+  readonly languages: ReadonlyArray<{
+    readonly code: string;
+    readonly name: string;
+    readonly nativeName: string;
+  }>;
+};
 
 export type CategoriesQueryVariables = Exact<{
   input: CategorySearchInput;
 }>;
 
-
-export type CategoriesQuery = { readonly categories: ReadonlyArray<{ readonly id: number, readonly name: string }> };
+export type CategoriesQuery = {
+  readonly categories: ReadonlyArray<{ readonly id: number; readonly name: string }>;
+};
 
 export type AuthorsQueryVariables = Exact<{
   input: AuthorSearchInput;
 }>;
 
-
-export type AuthorsQuery = { readonly authors: ReadonlyArray<{ readonly id: number, readonly name: string }> };
+export type AuthorsQuery = {
+  readonly authors: ReadonlyArray<{ readonly id: number; readonly name: string }>;
+};
 
 export type CreateAuthorMutationVariables = Exact<{
   input: AuthorCreateInput;
 }>;
-
 
 export type CreateAuthorMutation = { readonly createAuthor: { readonly id: number } };
 
@@ -444,13 +437,11 @@ export type CreateCategoryMutationVariables = Exact<{
   input: CategoryCreateInput;
 }>;
 
-
 export type CreateCategoryMutation = { readonly createCategory: { readonly id: number } };
 
 export type InviteAdminMutationVariables = Exact<{
   input: AdminInviteInput;
 }>;
-
 
 export type InviteAdminMutation = { readonly inviteAdmin: { readonly success: boolean } };
 
@@ -458,239 +449,266 @@ export type UpdateBookMutationVariables = Exact<{
   input: BookUpdateInput;
 }>;
 
-
 export type UpdateBookMutation = { readonly updateBook: { readonly id: number } };
 
 export type BookDetailsQueryVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
-
-export type BookDetailsQuery = { readonly bookDetails: { readonly id: number, readonly name: string, readonly description?: string | null, readonly previewUrl?: string | null, readonly categories: ReadonlyArray<{ readonly id: number, readonly name: string }>, readonly authors: ReadonlyArray<{ readonly id: number, readonly name: string }>, readonly languages: ReadonlyArray<{ readonly code: string, readonly name: string }>, readonly inventories: ReadonlyArray<{ readonly id: number, readonly serialNumber: string }> } };
+export type BookDetailsQuery = {
+  readonly bookDetails: {
+    readonly id: number;
+    readonly name: string;
+    readonly description?: string | null;
+    readonly previewUrl?: string | null;
+    readonly categories: ReadonlyArray<{ readonly id: number; readonly name: string }>;
+    readonly authors: ReadonlyArray<{ readonly id: number; readonly name: string }>;
+    readonly languages: ReadonlyArray<{ readonly code: string; readonly name: string }>;
+    readonly inventories: ReadonlyArray<{ readonly id: number; readonly serialNumber: string }>;
+  };
+};
 
 export const BooksListDocument = gql`
-    query booksList($input: BookSearchInput!) {
-  books(input: $input) {
-    id
-    name
-    previewUrl
-    description
-    isAvailable
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class BooksListGQL extends Apollo.Query<BooksListQuery, BooksListQueryVariables> {
-    override document = BooksListDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
+  query booksList($input: BookSearchInput!) {
+    books(input: $input) {
+      id
+      name
+      previewUrl
+      description
+      isAvailable
     }
   }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class BooksListGQL extends Apollo.Query<BooksListQuery, BooksListQueryVariables> {
+  override document = BooksListDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
 export const AdminLoginDocument = gql`
-    mutation adminLogin($input: AdminLoginInput!) {
-  adminLogin(input: $input) {
-    name
-    token
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class AdminLoginGQL extends Apollo.Mutation<AdminLoginMutation, AdminLoginMutationVariables> {
-    override document = AdminLoginDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
+  mutation adminLogin($input: AdminLoginInput!) {
+    adminLogin(input: $input) {
+      name
+      token
     }
   }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AdminLoginGQL extends Apollo.Mutation<
+  AdminLoginMutation,
+  AdminLoginMutationVariables
+> {
+  override document = AdminLoginDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
 export const CreateBookDocument = gql`
-    mutation createBook($input: BookCreateInput!) {
-  createBook(input: $input) {
-    id
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class CreateBookGQL extends Apollo.Mutation<CreateBookMutation, CreateBookMutationVariables> {
-    override document = CreateBookDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
+  mutation createBook($input: BookCreateInput!) {
+    createBook(input: $input) {
+      id
     }
   }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class CreateBookGQL extends Apollo.Mutation<
+  CreateBookMutation,
+  CreateBookMutationVariables
+> {
+  override document = CreateBookDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
 export const LanguagesDocument = gql`
-    query languages {
-  languages {
-    code
-    name
-    nativeName
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class LanguagesGQL extends Apollo.Query<LanguagesQuery, LanguagesQueryVariables> {
-    override document = LanguagesDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const CategoriesDocument = gql`
-    query categories($input: CategorySearchInput!) {
-  categories(input: $input) {
-    id
-    name
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class CategoriesGQL extends Apollo.Query<CategoriesQuery, CategoriesQueryVariables> {
-    override document = CategoriesDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const AuthorsDocument = gql`
-    query authors($input: AuthorSearchInput!) {
-  authors(input: $input) {
-    id
-    name
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class AuthorsGQL extends Apollo.Query<AuthorsQuery, AuthorsQueryVariables> {
-    override document = AuthorsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const CreateAuthorDocument = gql`
-    mutation createAuthor($input: AuthorCreateInput!) {
-  createAuthor(input: $input) {
-    id
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class CreateAuthorGQL extends Apollo.Mutation<CreateAuthorMutation, CreateAuthorMutationVariables> {
-    override document = CreateAuthorDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const CreateCategoryDocument = gql`
-    mutation createCategory($input: CategoryCreateInput!) {
-  createCategory(input: $input) {
-    id
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class CreateCategoryGQL extends Apollo.Mutation<CreateCategoryMutation, CreateCategoryMutationVariables> {
-    override document = CreateCategoryDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const InviteAdminDocument = gql`
-    mutation inviteAdmin($input: AdminInviteInput!) {
-  inviteAdmin(input: $input) {
-    success
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class InviteAdminGQL extends Apollo.Mutation<InviteAdminMutation, InviteAdminMutationVariables> {
-    override document = InviteAdminDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const UpdateBookDocument = gql`
-    mutation updateBook($input: BookUpdateInput!) {
-  updateBook(input: $input) {
-    id
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UpdateBookGQL extends Apollo.Mutation<UpdateBookMutation, UpdateBookMutationVariables> {
-    override document = UpdateBookDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const BookDetailsDocument = gql`
-    query bookDetails($id: Int!) {
-  bookDetails(id: $id) {
-    id
-    name
-    description
-    previewUrl
-    categories {
-      id
-      name
-    }
-    authors {
-      id
-      name
-    }
+  query languages {
     languages {
       code
       name
+      nativeName
     }
-    inventories {
-      id
-      serialNumber
-    }
+  }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class LanguagesGQL extends Apollo.Query<LanguagesQuery, LanguagesQueryVariables> {
+  override document = LanguagesDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
 }
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class BookDetailsGQL extends Apollo.Query<BookDetailsQuery, BookDetailsQueryVariables> {
-    override document = BookDetailsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
+export const CategoriesDocument = gql`
+  query categories($input: CategorySearchInput!) {
+    categories(input: $input) {
+      id
+      name
     }
   }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class CategoriesGQL extends Apollo.Query<CategoriesQuery, CategoriesQueryVariables> {
+  override document = CategoriesDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+export const AuthorsDocument = gql`
+  query authors($input: AuthorSearchInput!) {
+    authors(input: $input) {
+      id
+      name
+    }
+  }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthorsGQL extends Apollo.Query<AuthorsQuery, AuthorsQueryVariables> {
+  override document = AuthorsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+export const CreateAuthorDocument = gql`
+  mutation createAuthor($input: AuthorCreateInput!) {
+    createAuthor(input: $input) {
+      id
+    }
+  }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class CreateAuthorGQL extends Apollo.Mutation<
+  CreateAuthorMutation,
+  CreateAuthorMutationVariables
+> {
+  override document = CreateAuthorDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+export const CreateCategoryDocument = gql`
+  mutation createCategory($input: CategoryCreateInput!) {
+    createCategory(input: $input) {
+      id
+    }
+  }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class CreateCategoryGQL extends Apollo.Mutation<
+  CreateCategoryMutation,
+  CreateCategoryMutationVariables
+> {
+  override document = CreateCategoryDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+export const InviteAdminDocument = gql`
+  mutation inviteAdmin($input: AdminInviteInput!) {
+    inviteAdmin(input: $input) {
+      success
+    }
+  }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class InviteAdminGQL extends Apollo.Mutation<
+  InviteAdminMutation,
+  InviteAdminMutationVariables
+> {
+  override document = InviteAdminDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+export const UpdateBookDocument = gql`
+  mutation updateBook($input: BookUpdateInput!) {
+    updateBook(input: $input) {
+      id
+    }
+  }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class UpdateBookGQL extends Apollo.Mutation<
+  UpdateBookMutation,
+  UpdateBookMutationVariables
+> {
+  override document = UpdateBookDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+export const BookDetailsDocument = gql`
+  query bookDetails($id: Int!) {
+    bookDetails(id: $id) {
+      id
+      name
+      description
+      previewUrl
+      categories {
+        id
+        name
+      }
+      authors {
+        id
+        name
+      }
+      languages {
+        code
+        name
+      }
+      inventories {
+        id
+        serialNumber
+      }
+    }
+  }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class BookDetailsGQL extends Apollo.Query<BookDetailsQuery, BookDetailsQueryVariables> {
+  override document = BookDetailsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}

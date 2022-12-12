@@ -1,16 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { BooksListGQL } from '../@graphql/_generated';
 import { first } from 'rxjs';
-import { pagesCommonImports } from './pages-common-imports';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { CommonModule } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { ReactiveFormsModule } from '@angular/forms';
 
 interface BookInfo {
-  readonly id: number,
-  readonly previewUrl?: string | null,
-  readonly name: string,
-  readonly description?: string | null,
-  readonly isAvailable: boolean
+  readonly id: number;
+  readonly previewUrl?: string | null;
+  readonly name: string;
+  readonly description?: string | null;
+  readonly isAvailable: boolean;
 }
 
 @Component({
@@ -23,70 +27,64 @@ interface BookInfo {
 
       <!-- Position Column -->
       <ng-container matColumnDef="previewUrl">
-        <th mat-header-cell *matHeaderCellDef> Preview</th>
+        <th mat-header-cell *matHeaderCellDef>Preview</th>
         <td mat-cell *matCellDef="let element">
-          <img style="width: 50px; height: 50px;" mat-card-image [src]="element.previewUrl || '/assets/camera-icon.png'"
-               alt="Photo of a Shiba Inu">
+          <img
+            style="width: 50px; height: 50px;"
+            mat-card-image
+            [src]="element.previewUrl || '/assets/camera-icon.png'"
+            alt="Photo of a Shiba Inu"
+          />
         </td>
       </ng-container>
 
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Name</th>
-        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let element">{{ element.name }}</td>
       </ng-container>
 
       <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef> Description</th>
-        <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let element">{{ element.description }}</td>
       </ng-container>
 
       <ng-container matColumnDef="isAvailable">
-        <th mat-header-cell *matHeaderCellDef> isAvailable</th>
-        <td mat-cell *matCellDef="let element"> {{element.isAvailable}} </td>
+        <th mat-header-cell *matHeaderCellDef>isAvailable</th>
+        <td mat-cell *matCellDef="let element">{{ element.isAvailable }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="Actions">
-        <th mat-header-cell *matHeaderCellDef> Actions</th>
+      <ng-container *ngIf="authService.admin$ | async" matColumnDef="Actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let element">
-          <mat-icon *ngIf="authService.admin$ | async" [routerLink]="['update-book', element.id]"
-                    fontIcon="edit"></mat-icon>
+          <mat-icon [routerLink]="['update-book', element.id]" fontIcon="edit"></mat-icon>
         </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
   `,
-  imports: [
-    ...pagesCommonImports,
-    RouterLink,
+  imports: [CommonModule, MatTableModule, MatCardModule, MatIconModule, RouterLink],
+  styles: [
+    `
+      table {
+        width: 100%;
+      }
+    `,
   ],
-  styles: [`
-    table {
-      width: 100%;
-    }
-  `]
 })
 export class BooksListComponent implements OnInit {
   books: ReadonlyArray<BookInfo> = [];
-  displayedColumns: string[] = [
-    'previewUrl',
-    'name',
-    'description',
-    'isAvailable',
-    'Actions',
-  ];
+  displayedColumns: string[] = ['previewUrl', 'name', 'description', 'isAvailable', 'Actions'];
 
-  constructor(
-    private booksListGQL: BooksListGQL,
-    readonly authService: AuthService,
-  ) {
-  }
+  constructor(private booksListGQL: BooksListGQL, readonly authService: AuthService) {}
 
   ngOnInit(): void {
-    this.booksListGQL.fetch({input: {offset: 0, limit: 10}}).pipe(first()).subscribe((res) => {
-      this.books = res.data.books;
-    })
+    this.booksListGQL
+      .fetch({ input: { offset: 0, limit: 10 } })
+      .pipe(first())
+      .subscribe(res => {
+        this.books = res.data.books;
+      });
   }
-
 }

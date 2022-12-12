@@ -1,11 +1,20 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { BehaviorSubject, ReplaySubject, Subject, take, takeUntil } from 'rxjs';
 import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatIconModule } from '@angular/material/icon';
-import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 export interface MultiselectItem {
   id: string;
@@ -13,10 +22,9 @@ export interface MultiselectItem {
 }
 
 export interface MultiselectInitialState {
-  available: MultiselectItem[],
-  selected: MultiselectItem[]
+  available: MultiselectItem[];
+  selected: MultiselectItem[];
 }
-
 
 @Component({
   standalone: true,
@@ -27,18 +35,17 @@ export interface MultiselectInitialState {
         <mat-form-field style="width: 100%;">
           <mat-select
             [formControl]="itemCtrl"
-            (valueChange)="onSelect.emit($event)"
-            placeholder="{{placeholder}}"
+            (valueChange)="valueUpdated.emit($event)"
+            placeholder="{{ placeholder }}"
             [multiple]="true"
             #singleSelect
           >
             <mat-option>
               <ngx-mat-select-search
                 [formControl]="itemFilterCtrl"
-                placeholderLabel="Find {{placeholder}}..."
+                placeholderLabel="Find {{ placeholder }}..."
                 noEntriesFoundLabel="'no matching found'"
-                [showToggleAllCheckbox]="checkIfShowCreateButton(filteredItems| async)"
-
+                [showToggleAllCheckbox]="checkIfShowCreateButton(filteredItems | async)"
                 toggleAllCheckboxTooltipMessage="Select / Unselect All"
                 [toggleAllCheckboxIndeterminate]="isIndeterminate"
                 [toggleAllCheckboxChecked]="isChecked"
@@ -68,13 +75,11 @@ export interface MultiselectInitialState {
     ReactiveFormsModule,
     NgxMatSelectSearchModule,
     MatIconModule,
-    AsyncPipe,
-    NgIf,
-    NgForOf,
-  ]
+    CommonModule,
+  ],
 })
-export class MultiSelectComponent {
-  @Output() onSelect = new EventEmitter<MultiselectItem[]>();
+export class MultiSelectComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Output() valueUpdated = new EventEmitter<MultiselectItem[]>();
   @Input() initialState$!: BehaviorSubject<MultiselectInitialState>;
   @Input() placeholder?: string;
   @Input() showSelectedValues = false;
@@ -90,7 +95,7 @@ export class MultiSelectComponent {
   /** list of cars filtered by search keyword */
   public filteredItems: ReplaySubject<MultiselectItem[]> = new ReplaySubject<MultiselectItem[]>(1);
 
-  @ViewChild('singleSelect', {static: true})
+  @ViewChild('singleSelect', { static: true })
   singleSelect!: MatSelect;
 
   /** Subject that emits when the component has been destroyed. */
@@ -104,22 +109,17 @@ export class MultiSelectComponent {
     // // set initial selection
     // this.carCtrl.setValue([this.cars[1], this.cars[2]]);
 
-    this.initialState$
-      .pipe(takeUntil(this._onDestroy))
-      .subscribe(({available, selected}) => {
-        this.availableItems = available;
-        this.itemCtrl.patchValue(selected);
-        // load the initial list
-        this.filteredItems.next(this.availableItems.slice());
-      });
-
+    this.initialState$.pipe(takeUntil(this._onDestroy)).subscribe(({ available, selected }) => {
+      this.availableItems = available;
+      this.itemCtrl.patchValue(selected);
+      // load the initial list
+      this.filteredItems.next(this.availableItems.slice());
+    });
 
     // listen for search field value changes
-    this.itemFilterCtrl.valueChanges
-      .pipe(takeUntil(this._onDestroy))
-      .subscribe(() => {
-        this.filterItems();
-      });
+    this.itemFilterCtrl.valueChanges.pipe(takeUntil(this._onDestroy)).subscribe(() => {
+      this.filterItems();
+    });
   }
 
   ngAfterViewInit() {
@@ -135,12 +135,10 @@ export class MultiSelectComponent {
    * Sets the initial value after the filteredCars are loaded initially
    */
   protected setInitialValue() {
-    this.filteredItems
-      .pipe(take(1), takeUntil(this._onDestroy))
-      .subscribe(() => {
-        this.singleSelect.compareWith = (a: MultiselectItem, b: MultiselectItem) =>
-          a && b && a.id === b.id;
-      });
+    this.filteredItems.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
+      this.singleSelect.compareWith = (a: MultiselectItem, b: MultiselectItem) =>
+        a && b && a.id === b.id;
+    });
   }
 
   protected filterItems() {
@@ -157,16 +155,14 @@ export class MultiSelectComponent {
     }
     // filter the cars
     this.filteredItems.next(
-      this.availableItems.filter((car) => car.name.toLowerCase().indexOf(search) > -1)
+      this.availableItems.filter(car => car.name.toLowerCase().indexOf(search) > -1),
     );
   }
 
-
   onCreate() {
-    let search = this.itemFilterCtrl.value;
+    const search = this.itemFilterCtrl.value;
     if (this.createResource && search) {
-      this.createResource(search)
-        .then(() => this.filterItems());
+      this.createResource(search).then(() => this.filterItems());
     }
   }
 
@@ -185,12 +181,11 @@ export class MultiSelectComponent {
   checkIfShowCreateButton(values: MultiselectItem[] | undefined | null): boolean {
     const searchValue = this.itemFilterCtrl.value?.trim();
     if (!this.createResource || !values || !searchValue) {
-      return false
+      return false;
     }
 
-    const hasSameAuthor = values.some(mi => mi.name === searchValue)
+    const hasSameAuthor = values.some(mi => mi.name === searchValue);
 
     return !hasSameAuthor;
   }
-
 }
