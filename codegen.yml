@@ -1,15 +1,18 @@
 overwrite: true
-schema: "https://api.gummersbach-library.net/graphql"
+schema:
+  - http://localhost:11300/graphql
+documents: src/**/*.graphql
 generates:
-  ./src/codegen/fragment-matcher.ts:
-    plugins:
-      - fragment-matcher
-  ./src/codegen/generated-types.tsx:
-    documents: "**/operations/**/*.ts"
+  src/app/@graphql/_generated.ts:
     plugins:
       - typescript
       - typescript-operations
-      - typescript-react-apollo
-  ./src/codegen/schema.graphql:
-    plugins:
-      - schema-ast
+      - typescript-apollo-angular
+    config:
+      flattenGeneratedTypes: false
+      exportFragmentSpreadSubTypes: true
+      avoidOptionals: false
+      skipTypename: true
+      immutableTypes: true
+      preResolveTypes: true
+      addExplicitOverride: true
