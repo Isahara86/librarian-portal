@@ -92,3 +92,50 @@ query bookDetails($id: Int!) {
     }
   }
 }
+
+query customers($input: CustomersSearchInput!) {
+  customers(input: $input) {
+    id
+    name
+    email
+    phone
+    description
+  }
+}
+
+query customerDetails($id: Int!) {
+  customerDetails(id: $id) {
+    id
+    name
+    email
+    phone
+    description
+    activeReservations {
+      id
+      createdAt
+      startAt
+      endAt
+      description
+      bookInventory {
+        serialNumber
+        book {
+          id
+          name
+          previewUrl
+        }
+      }
+    }
+  }
+}
+
+mutation createCustomer($input: CustomerCreateInput!) {
+  createCustomer(input: $input) {
+    id
+  }
+}
+
+mutation updateCustomer($input: CustomerUpdateInput!) {
+  updateCustomer(input: $input) {
+    id
+  }
+}

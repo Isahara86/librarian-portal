@@ -331,7 +331,7 @@ export type Query = {
   readonly bookReservationHistory: ReadonlyArray<BookInventoryReservation>;
   readonly books: ReadonlyArray<Book>;
   readonly categories: ReadonlyArray<Category>;
-  readonly customerDetails: ReadonlyArray<CustomerDetails>;
+  readonly customerDetails: CustomerDetails;
   readonly customerReservationHistory: ReadonlyArray<CustomerDetailsReservation>;
   readonly customers: ReadonlyArray<Customer>;
   readonly languages: ReadonlyArray<Language>;
@@ -467,6 +467,61 @@ export type BookDetailsQuery = {
     readonly inventories: ReadonlyArray<{ readonly id: number; readonly serialNumber: string }>;
   };
 };
+
+export type CustomersQueryVariables = Exact<{
+  input: CustomersSearchInput;
+}>;
+
+export type CustomersQuery = {
+  readonly customers: ReadonlyArray<{
+    readonly id: number;
+    readonly name: string;
+    readonly email?: string | null;
+    readonly phone?: string | null;
+    readonly description?: string | null;
+  }>;
+};
+
+export type CustomerDetailsQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+export type CustomerDetailsQuery = {
+  readonly customerDetails: {
+    readonly id: number;
+    readonly name: string;
+    readonly email?: string | null;
+    readonly phone?: string | null;
+    readonly description?: string | null;
+    readonly activeReservations: ReadonlyArray<{
+      readonly id: number;
+      readonly createdAt?: any | null;
+      readonly startAt?: any | null;
+      readonly endAt?: any | null;
+      readonly description?: string | null;
+      readonly bookInventory: {
+        readonly serialNumber: string;
+        readonly book: {
+          readonly id: number;
+          readonly name: string;
+          readonly previewUrl?: string | null;
+        };
+      };
+    }>;
+  };
+};
+
+export type CreateCustomerMutationVariables = Exact<{
+  input: CustomerCreateInput;
+}>;
+
+export type CreateCustomerMutation = { readonly createCustomer: { readonly id: number } };
+
+export type UpdateCustomerMutationVariables = Exact<{
+  input: CustomerUpdateInput;
+}>;
+
+export type UpdateCustomerMutation = { readonly updateCustomer: { readonly id: number } };
 
 export const BooksListDocument = gql`
   query booksList($input: BookSearchInput!) {
@@ -707,6 +762,110 @@ export const BookDetailsDocument = gql`
 })
 export class BookDetailsGQL extends Apollo.Query<BookDetailsQuery, BookDetailsQueryVariables> {
   override document = BookDetailsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+export const CustomersDocument = gql`
+  query customers($input: CustomersSearchInput!) {
+    customers(input: $input) {
+      id
+      name
+      email
+      phone
+      description
+    }
+  }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class CustomersGQL extends Apollo.Query<CustomersQuery, CustomersQueryVariables> {
+  override document = CustomersDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+export const CustomerDetailsDocument = gql`
+  query customerDetails($id: Int!) {
+    customerDetails(id: $id) {
+      id
+      name
+      email
+      phone
+      description
+      activeReservations {
+        id
+        createdAt
+        startAt
+        endAt
+        description
+        bookInventory {
+          serialNumber
+          book {
+            id
+            name
+            previewUrl
+          }
+        }
+      }
+    }
+  }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class CustomerDetailsGQL extends Apollo.Query<
+  CustomerDetailsQuery,
+  CustomerDetailsQueryVariables
+> {
+  override document = CustomerDetailsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+export const CreateCustomerDocument = gql`
+  mutation createCustomer($input: CustomerCreateInput!) {
+    createCustomer(input: $input) {
+      id
+    }
+  }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class CreateCustomerGQL extends Apollo.Mutation<
+  CreateCustomerMutation,
+  CreateCustomerMutationVariables
+> {
+  override document = CreateCustomerDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+export const UpdateCustomerDocument = gql`
+  mutation updateCustomer($input: CustomerUpdateInput!) {
+    updateCustomer(input: $input) {
+      id
+    }
+  }
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class UpdateCustomerGQL extends Apollo.Mutation<
+  UpdateCustomerMutation,
+  UpdateCustomerMutationVariables
+> {
+  override document = UpdateCustomerDocument;
 
   constructor(apollo: Apollo.Apollo) {
     super(apollo);

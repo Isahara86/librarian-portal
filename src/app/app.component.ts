@@ -45,17 +45,9 @@ import { AsyncPipe, NgIf } from '@angular/common';
             <a
               *ngIf="auth.admin$ | async"
               mat-menu-item
-              routerLink="/create-author"
+              routerLink="/customers-list"
               routerLinkActive="active"
-              >Create Author</a
-            >
-            <a
-              *ngIf="auth.admin$ | async"
-              mat-menu-item
-              routerLink="/create-category"
-              routerLinkActive="active"
-              class="mat-primary"
-              >Create Category</a
+              >Customers</a
             >
             <a
               *ngIf="auth.admin$ | async"

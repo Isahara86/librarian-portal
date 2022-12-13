@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BooksListGQL } from '../@graphql/_generated';
+import { BooksListGQL, BooksListQuery } from '../@graphql/_generated';
 import { first } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -7,15 +7,6 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { ReactiveFormsModule } from '@angular/forms';
-
-interface BookInfo {
-  readonly id: number;
-  readonly previewUrl?: string | null;
-  readonly name: string;
-  readonly description?: string | null;
-  readonly isAvailable: boolean;
-}
 
 @Component({
   standalone: true,
@@ -74,7 +65,7 @@ interface BookInfo {
   ],
 })
 export class BooksListComponent implements OnInit {
-  books: ReadonlyArray<BookInfo> = [];
+  books: BooksListQuery['books'] = [];
   displayedColumns: string[] = ['previewUrl', 'name', 'description', 'isAvailable', 'Actions'];
 
   constructor(private booksListGQL: BooksListGQL, readonly authService: AuthService) {}

@@ -176,7 +176,7 @@ import { MatButtonModule } from '@angular/material/button';
 export class CreateUpdateBookComponent implements OnInit {
   loading = false;
   error?: string;
-  bookForUpdate?: BookDetailsQuery;
+  bookForUpdate?: BookDetailsQuery['bookDetails'];
   createBookForm = this.formBuilder.group({
     name: ['', Validators.required],
     description: [''],
@@ -232,8 +232,8 @@ export class CreateUpdateBookComponent implements OnInit {
     }
 
     if (book) {
-      this.bookForUpdate = book;
-      this.fillBookForm(book);
+      this.bookForUpdate = book.bookDetails;
+      this.fillBookForm(book.bookDetails);
     }
 
     await Promise.all([
@@ -249,20 +249,18 @@ export class CreateUpdateBookComponent implements OnInit {
     ]);
   }
 
-  fillBookForm(book: BookDetailsQuery) {
-    this.createBookForm.controls.name.patchValue(book.bookDetails.name);
-    if (book.bookDetails.description) {
-      this.createBookForm.controls.description.patchValue(book.bookDetails.description);
+  fillBookForm(book: BookDetailsQuery['bookDetails']) {
+    this.createBookForm.controls.name.patchValue(book.name);
+    if (book.description) {
+      this.createBookForm.controls.description.patchValue(book.description);
     }
 
-    this.preview = book.bookDetails.previewUrl;
+    this.preview = book.previewUrl;
 
-    if (book.bookDetails.inventories.length) {
-      this.createBookForm.controls.inventories.controls[0].patchValue(
-        book.bookDetails.inventories[0],
-      );
-      for (let i = 1; i < book.bookDetails.inventories.length; i++) {
-        this.addInventory(book.bookDetails.inventories[i].serialNumber);
+    if (book.inventories.length) {
+      this.createBookForm.controls.inventories.controls[0].patchValue(book.inventories[0]);
+      for (let i = 1; i < book.inventories.length; i++) {
+        this.addInventory(book.inventories[i].serialNumber);
       }
     }
   }
@@ -366,11 +364,11 @@ export class CreateUpdateBookComponent implements OnInit {
       return;
     }
 
-    const existingInventories = this.bookForUpdate.bookDetails.inventories;
+    const existingInventories = this.bookForUpdate.inventories;
 
     const variables: UpdateBookMutationVariables = {
       input: {
-        id: this.bookForUpdate.bookDetails.id,
+        id: this.bookForUpdate.id,
         name: formValues.name,
         description: formValues.description,
         preview: this.file,
@@ -488,6 +486,6 @@ export class CreateUpdateBookComponent implements OnInit {
   }
 
   checkIsInventoryNew(index: number): boolean {
-    return !this.bookForUpdate?.bookDetails.inventories[index];
+    return !this.bookForUpdate?.inventories[index];
   }
 }

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdminAuthGuard } from './services/admin-auth-guard.service';
+import { CreateUpdateCustomerComponent } from './pages/create-update-customer.component';
 
 export const appRoutes: Routes = [
   {
@@ -7,13 +8,31 @@ export const appRoutes: Routes = [
     loadComponent: () => import('./pages/books-list.component').then(m => m.BooksListComponent),
     //   loadChildren: () => import("./app/layout/layout.routes").then((m) => m.routes),
   },
+
+  {
+    path: 'customers-list',
+    loadComponent: () =>
+      import('./pages/customers-list.component').then(m => m.CustomersListComponent),
+    canActivate: [AdminAuthGuard],
+  },
+  {
+    path: 'create-customer',
+    loadComponent: () =>
+      import('./pages/create-update-customer.component').then(m => m.CreateUpdateCustomerComponent),
+    canActivate: [AdminAuthGuard],
+  },
+  {
+    path: 'update-customer/:customerId',
+    loadComponent: () =>
+      import('./pages/create-update-customer.component').then(m => m.CreateUpdateCustomerComponent),
+    canActivate: [AdminAuthGuard],
+  },
   {
     path: 'create-author',
     loadComponent: () =>
       import('./pages/create-author.component').then(m => m.CreateAuthorComponent),
     canActivate: [AdminAuthGuard],
   },
-
   {
     path: 'create-book',
     loadComponent: () =>
