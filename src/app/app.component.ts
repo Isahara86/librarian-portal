@@ -57,7 +57,7 @@ import { AsyncPipe, NgIf } from '@angular/common';
               >Invite librarian</a
             >
             <a
-              *ngIf="(auth.admin$ | async) !== null"
+              *ngIf="(auth.admin$ | async) === null"
               mat-menu-item
               routerLink="/login"
               routerLinkActive="active"
