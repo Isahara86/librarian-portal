@@ -16,7 +16,8 @@ import extractFiles from 'extract-files/extractFiles.mjs';
 // @ts-ignore
 import isExtractableFile from 'extract-files/isExtractableFile.mjs';
 import { environment } from '../../environments/environment';
-
+// import { onError } from '@apollo/client/link/error';
+// import { asyncMap } from '@apollo/client/utilities';
 // import { environment } from 'src/environments/environment';
 // import { WebSocketLink } from '@apollo/client/link/ws';
 // const GQL_WS_ENDPOINT = environment.graphqlWSEndpoint;
@@ -25,27 +26,6 @@ export function buildApolloConfig(
   httpLink: HttpLink,
   token?: string,
 ): ApolloClientOptions<unknown> {
-  const basic = setContext(() => ({
-    headers: {
-      Accept: 'charset=utf-8',
-    },
-  }));
-
-  const auth = setContext(() => {
-    // const token = localStorage.getItem('token');
-    // let token = this.auth.getCachedAccessToken();
-
-    if (token === null) {
-      return {};
-    } else {
-      return {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-    }
-  });
-
   // // autho refresh token
   // const auth = setContext(async(_, { headers }) => {
   //   // Grab token if there is one in storage or hasn't expired
@@ -67,9 +47,44 @@ export function buildApolloConfig(
   //   };
   // });
 
+  // const loggerLink = new ApolloLink((operation, forward) => {
+  //   console.log('apollo request', new Date().toISOString());
+  //   return asyncMap(forward(operation), async response => {
+  //     // let data = response.data;
+  //     // if (data.price && data.currency === "USD") {
+  //     //   data.price = await usdToEur(data.price);
+  //     //   data.currency = "EUR";
+  //     // }
+  //     console.log('apollo response', new Date().toISOString());
+  //
+  //     return response;
+  //   });
+  // });
+
+  // const errorLink = onError(({ networkError }) => {
+  //   console.log('Graphql errorLink', new Date().toISOString());
+  //   // if (networkError.statusCode === 401) logout();
+  // });
+
+  const authContext = setContext(() => {
+    // const token = localStorage.getItem('token');
+    // let token = this.auth.getCachedAccessToken();
+
+    if (token === null) {
+      return {};
+    } else {
+      return {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+    }
+  });
+
   const link = ApolloLink.from([
-    basic,
-    auth,
+    // loggerLink,
+    // errorLink,
+    authContext,
     httpLink.create({
       uri: environment.API_URL,
       extractFiles: body => extractFiles(body, isExtractableFile),
