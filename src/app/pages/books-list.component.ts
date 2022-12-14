@@ -51,8 +51,8 @@ import { MatIconModule } from '@angular/material/icon';
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="getColumns()"></tr>
+      <tr mat-row *matRowDef="let row; columns: getColumns()"></tr>
     </table>
   `,
   imports: [CommonModule, MatTableModule, MatCardModule, MatIconModule, RouterLink],
@@ -66,7 +66,13 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class BooksListComponent implements OnInit {
   books: BooksListQuery['books'] = [];
-  displayedColumns: string[] = ['previewUrl', 'name', 'description', 'isAvailable', 'Actions'];
+  private displayedColumns: string[] = [
+    'previewUrl',
+    'name',
+    'description',
+    'isAvailable',
+    'Actions',
+  ];
 
   constructor(private booksListGQL: BooksListGQL, readonly authService: AuthService) {}
 
@@ -77,5 +83,12 @@ export class BooksListComponent implements OnInit {
       .subscribe(res => {
         this.books = res.data.books;
       });
+  }
+
+  getColumns(): string[] {
+    if (this.authService.admin$.getValue()) {
+      return this.displayedColumns;
+    }
+    return this.displayedColumns.filter(c => c !== 'Actions');
   }
 }
