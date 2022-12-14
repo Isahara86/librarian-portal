@@ -14,3 +14,10 @@ body {
 *::after {
   box-sizing: border-box;
 }
+
+.no-background {
+  .mat-mdc-dialog-container .mdc-dialog__surface {
+    background-color: unset !important;
+      box-shadow: none !important;
+  }
+}
