@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-input[controlName]',
   template: ` <mat-form-field class="example-form-field" appearance="fill" style="width: 100%;">
     <mat-label *ngIf="label">{{ label }}</mat-label>
+    <span *ngIf="prefix && userInput.value" matTextPrefix=>{{prefix}}</span>
     <input matInput type="{{ type }}" formControlName="{{ controlName }}" #userInput />
     <button
       *ngIf="userInput.value"
@@ -40,6 +41,7 @@ import { CommonModule } from '@angular/common';
 export class AppInputComponent {
   @Input() label?: string;
   @Input() type = 'text';
+  @Input() prefix: string | null = null;
   @Input() controlName!: string;
   @ViewChild('input') inputRef!: ElementRef;
 }
