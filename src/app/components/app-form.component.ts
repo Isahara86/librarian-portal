@@ -22,6 +22,13 @@ export class AppFormComponent implements OnDestroy {
   public submit$ = new Subject<void>();
 
   constructor() {
+    this.initFormSubmitDebounce();
+  }
+
+  /*
+  prevent double submit
+  * */
+  private initFormSubmitDebounce(): void {
     const first = this.submit$.pipe(take(1));
     const rest = this.submit$.pipe(skipUntil(first), debounceTime(200));
 
