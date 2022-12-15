@@ -19,9 +19,7 @@ import { AppFormComponent } from '../components/app-form.component';
       <app-input controlName="password" label="password"></app-input>
 
       <mat-error *ngIf="error">{{ error }}</mat-error>
-      <button mat-flat-button color="primary" [disabled]="loading || loginForm.invalid">
-        Login
-      </button>
+      <button mat-flat-button color="primary" [disabled]="loginForm.invalid">Login</button>
     </app-form>
   `,
   imports: [
@@ -34,8 +32,6 @@ import { AppFormComponent } from '../components/app-form.component';
   ],
 })
 export class LoginComponent implements OnInit {
-  loading = false;
-  submitted = false;
   returnUrl!: string;
   error?: string;
 
@@ -56,27 +52,20 @@ export class LoginComponent implements OnInit {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
-  // convenience getter for easy access to form fields
-  get f() {
-    return this.loginForm.controls;
-  }
-
   async onSubmit() {
-    this.submitted = true;
-
+    const controls = this.loginForm.controls;
     // stop here if form is invalid
-    if (this.loginForm.invalid || !this.f.login.value || !this.f.password.value) {
+    if (this.loginForm.invalid || !controls.login.value || !controls.password.value) {
       return;
     }
 
-    this.loading = true;
-
     await this.authService
-      .adminLogin(this.f.login.value, this.f.password.value)
-      .then(() => this.router.navigate([this.returnUrl]))
+      .adminLogin(controls.login.value, controls.password.value)
+      .then(() => {
+        this.router.navigate([this.returnUrl]);
+      })
       .catch(err => {
         this.error = err;
-        this.loading = false;
       });
   }
 }

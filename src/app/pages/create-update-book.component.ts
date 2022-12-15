@@ -26,7 +26,7 @@ import {
   MultiselectInitialState,
   MultiselectItem,
 } from '../components/multi-select.component';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AppFormComponent } from '../components/app-form.component';
@@ -36,6 +36,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { DialogService } from '../services/dialog.service';
 
 @Component({
   standalone: true,
@@ -132,7 +133,7 @@ import { MatButtonModule } from '@angular/material/button';
         style="margin: 20px 0;"
         mat-flat-button
         color="primary"
-        [disabled]="loading || createBookForm.invalid"
+        [disabled]="createBookForm.invalid"
       >
         {{ bookForUpdate ? 'Save' : 'Create' }}
       </button>
@@ -174,7 +175,6 @@ import { MatButtonModule } from '@angular/material/button';
   ],
 })
 export class CreateUpdateBookComponent implements OnInit {
-  loading = false;
   error?: string;
   bookForUpdate?: BookDetailsQuery['bookDetails'];
   createBookForm = this.formBuilder.group({
@@ -218,6 +218,7 @@ export class CreateUpdateBookComponent implements OnInit {
     private apollo: Apollo,
     private router: Router,
     private route: ActivatedRoute,
+    private dialogService: DialogService,
   ) {
     this.createAuthor = this.createAuthor.bind(this);
     this.createCategory = this.createCategory.bind(this);
@@ -279,7 +280,7 @@ export class CreateUpdateBookComponent implements OnInit {
     const bookIdFromRoute = Number(bookIdParam);
 
     if (Number.isInteger(bookIdFromRoute)) {
-      const res = await this.bookDetailsGQL.fetch({ id: bookIdFromRoute }).toPromise();
+      const res = await firstValueFrom(this.bookDetailsGQL.fetch({ id: bookIdFromRoute }));
       if (res?.data) {
         result.book = res?.data;
       } else {
@@ -293,7 +294,7 @@ export class CreateUpdateBookComponent implements OnInit {
   }
 
   async fetchLanguages(selected: MultiselectItem[] = []): Promise<void> {
-    const availableLanguages = await this.languagesGQL.fetch().toPromise();
+    const availableLanguages = await firstValueFrom(this.languagesGQL.fetch());
     const available =
       availableLanguages?.data.languages.map(({ code, name }) => ({
         id: code,
@@ -303,9 +304,9 @@ export class CreateUpdateBookComponent implements OnInit {
   }
 
   async fetchCategories(selected: MultiselectItem[] = []): Promise<void> {
-    const categories = await this.categoriesGQL
-      .fetch({ input: { offset: 0, limit: 100 } })
-      .toPromise();
+    const categories = await firstValueFrom(
+      this.categoriesGQL.fetch({ input: { offset: 0, limit: 100 } }),
+    );
     const available =
       categories?.data.categories.map(({ id, name }) => ({
         id: id.toString(),
@@ -316,7 +317,9 @@ export class CreateUpdateBookComponent implements OnInit {
   }
 
   async fetchAuthors(selected: MultiselectItem[] = []): Promise<void> {
-    const authors = await this.authorsGQL.fetch({ input: { offset: 0, limit: 500 } }).toPromise();
+    const authors = await firstValueFrom(
+      this.authorsGQL.fetch({ input: { offset: 0, limit: 500 } }),
+    );
     const available =
       authors?.data.authors.map(({ id, name }) => ({ id: id.toString(), name })) || [];
     this.initialAuthorState$.next({ available, selected });
@@ -393,19 +396,21 @@ export class CreateUpdateBookComponent implements OnInit {
       },
     };
 
-    await this.apollo
-      .mutate<unknown>({
-        mutation: this.updateBookGQL.document,
-        variables,
-        context: {
-          useMultipart: true,
-        },
+    await this.dialogService
+      .showLoadingUntil(
+        this.apollo.mutate<unknown>({
+          mutation: this.updateBookGQL.document,
+          variables,
+          context: {
+            useMultipart: true,
+          },
+        }),
+      )
+      .then(() => {
+        this.router.navigate(['']);
       })
-      .toPromise()
-      .then(() => this.router.navigate(['']))
       .catch(err => {
         this.error = err;
-        this.loading = false;
       });
   }
 
@@ -432,19 +437,21 @@ export class CreateUpdateBookComponent implements OnInit {
       },
     };
 
-    await this.apollo
-      .mutate<unknown>({
-        mutation: this.createBookGQL.document,
-        variables,
-        context: {
-          useMultipart: true,
-        },
+    await this.dialogService
+      .showLoadingUntil(
+        this.apollo.mutate<unknown>({
+          mutation: this.createBookGQL.document,
+          variables,
+          context: {
+            useMultipart: true,
+          },
+        }),
+      )
+      .then(() => {
+        this.router.navigate(['']);
       })
-      .toPromise()
-      .then(() => this.router.navigate(['']))
       .catch(err => {
         this.error = err;
-        this.loading = false;
       });
 
     // // TODO find solution
@@ -464,24 +471,24 @@ export class CreateUpdateBookComponent implements OnInit {
   }
 
   async createAuthor(name: string): Promise<void> {
-    await this.createAuthorGQL
-      .mutate({ input: { name } })
-      .toPromise()
-      .then(() => this.fetchAuthors())
+    await this.dialogService
+      .showLoadingUntil(this.createAuthorGQL.mutate({ input: { name } }))
+      .then(() => {
+        this.fetchAuthors();
+      })
       .catch(err => {
         this.error = err;
-        this.loading = false;
       });
   }
 
   async createCategory(name: string): Promise<void> {
-    await this.createCategoryGQL
-      .mutate({ input: { name } })
-      .toPromise()
-      .then(() => this.fetchCategories())
+    await this.dialogService
+      .showLoadingUntil(this.createCategoryGQL.mutate({ input: { name } }))
+      .then(() => {
+        this.fetchCategories();
+      })
       .catch(err => {
         this.error = err;
-        this.loading = false;
       });
   }
 

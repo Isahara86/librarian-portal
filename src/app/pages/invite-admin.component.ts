@@ -15,6 +15,7 @@ import { AppInputComponent } from '../components/app-input.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { AppFormComponent } from '../components/app-form.component';
+import { DialogService } from '../services/dialog.service';
 
 @Component({
   standalone: true,
@@ -31,9 +32,7 @@ import { AppFormComponent } from '../components/app-form.component';
       <mat-error *ngIf="createForm.hasError('notSame')"
         >Password and confirmation did not match</mat-error
       >
-      <button mat-flat-button color="primary" [disabled]="loading || createForm.invalid">
-        Invite
-      </button>
+      <button mat-flat-button color="primary" [disabled]="createForm.invalid">Invite</button>
     </app-form>
   `,
   imports: [
@@ -46,8 +45,6 @@ import { AppFormComponent } from '../components/app-form.component';
   ],
 })
 export class InviteAdminComponent {
-  loading = false;
-  submitted = false;
   returnUrl!: string;
   error?: string;
   checkPasswords: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
@@ -74,6 +71,7 @@ export class InviteAdminComponent {
     private router: Router,
     private authService: AuthService,
     private inviteAdminGQL: InviteAdminGQL,
+    private dialogService: DialogService,
   ) {}
 
   // convenience getter for easy access to form fields
@@ -82,27 +80,26 @@ export class InviteAdminComponent {
   }
 
   async onSubmit() {
-    this.submitted = true;
-
     // stop here if form is invalid
     if (this.createForm.invalid || !this.f.login.value || !this.f.password.value) {
       return;
     }
 
-    this.loading = true;
-    await this.inviteAdminGQL
-      .mutate({
-        input: {
-          login: this.f.login.value,
-          name: this.f.login.value,
-          password: this.f.password.value,
-        },
+    this.dialogService
+      .showLoadingUntil(
+        this.inviteAdminGQL.mutate({
+          input: {
+            login: this.f.login.value,
+            name: this.f.login.value,
+            password: this.f.password.value,
+          },
+        }),
+      )
+      .then(() => {
+        this.router.navigate([this.returnUrl || '']);
       })
-      .toPromise()
-      .then(() => this.router.navigate([this.returnUrl || '']))
       .catch(err => {
         this.error = err;
-        this.loading = false;
       });
   }
 }

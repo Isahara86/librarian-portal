@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 // import { SpinnerOverlayComponent } from '@app/core/spinner-overlay/spinner-overlay.component';
 import { LoadingComponent } from '../dialogs/loading.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { firstValueFrom, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -44,5 +45,20 @@ export class DialogService {
     // if (this.overlayRef) {
     //   this.overlayRef?.detach();
     // }
+  }
+
+  async showLoadingUntil<T>(source: Observable<T>): Promise<T> {
+    this.showLoading();
+
+    return firstValueFrom(source).then(
+      (res: any) => {
+        this.hide();
+        return res;
+      },
+      err => {
+        this.hide();
+        return err;
+      },
+    );
   }
 }

@@ -12,6 +12,7 @@ import {
   debounceTime,
   distinctUntilChanged,
   filter,
+  firstValueFrom,
   fromEvent,
   Subject,
   takeUntil,
@@ -124,13 +125,13 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   async fetchCustomers(query?: string): Promise<void> {
-    const res = await this.customersGQL
-      .fetch({
+    const res = await firstValueFrom(
+      this.customersGQL.fetch({
         input: {
           ...(query && { query }),
         },
-      })
-      .toPromise();
+      }),
+    );
 
     if (res?.data.customers) {
       this.customers = res.data.customers;

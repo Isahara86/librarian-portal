@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { buildApolloConfig } from '../@graphql/graphql.module';
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { AdminLoginGQL } from '../@graphql/_generated';
 import { HttpLink } from 'apollo-angular/http';
+import { DialogService } from './dialog.service';
+import { Router } from '@angular/router';
 
 export const ADMIN_STORAGE_KEY = 'admin_user';
 
@@ -15,6 +17,8 @@ export class AuthService {
     private apollo: Apollo,
     private adminLoginGQL: AdminLoginGQL,
     private httpLink: HttpLink,
+    private dialogService: DialogService,
+    private router: Router,
   ) {
     const adminStr = localStorage.getItem(ADMIN_STORAGE_KEY);
     let admin: { readonly name: string; readonly token: string } | null = null;
@@ -41,7 +45,10 @@ export class AuthService {
   }
 
   async adminLogin(login: string, password: string): Promise<void> {
-    const res = await this.adminLoginGQL.mutate({ input: { login, password } }).toPromise();
+    const res = await this.dialogService.showLoadingUntil(
+      this.adminLoginGQL.mutate({ input: { login, password } }),
+    );
+    // const res = await firstValueFrom(this.adminLoginGQL.mutate({ input: { login, password } }));
 
     const admin = res?.data?.adminLogin;
     if (!admin) {
@@ -57,5 +64,6 @@ export class AuthService {
     localStorage.removeItem(ADMIN_STORAGE_KEY);
     this.admin$.next(null);
     this.rebuildApollo();
+    this.router.navigate(['/']);
   }
 }

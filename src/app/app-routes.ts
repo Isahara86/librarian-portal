@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { AdminAuthGuard } from './services/admin-auth-guard.service';
-import { CreateUpdateCustomerComponent } from './pages/create-update-customer.component';
 
 export const appRoutes: Routes = [
   {
