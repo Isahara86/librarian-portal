@@ -61,11 +61,7 @@ export class LoginComponent implements OnInit {
 
     await this.authService
       .adminLogin(controls.login.value, controls.password.value)
-      .then(() => {
-        this.router.navigate([this.returnUrl]);
-      })
-      .catch(err => {
-        this.error = err;
-      });
+      .then(() => this.router.navigate([this.returnUrl]))
+      .catch(err => (this.error = err));
   }
 }

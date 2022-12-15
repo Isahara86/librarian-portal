@@ -55,8 +55,6 @@ export class CreateCategoryComponent {
         this.createCategoryGQL.mutate({ input: { name: this.createForm.controls.name.value } }),
       )
       .then(() => this.router.navigate(['']))
-      .catch(err => {
-        this.error = err;
-      });
+      .catch(err => (this.error = err));
   }
 }

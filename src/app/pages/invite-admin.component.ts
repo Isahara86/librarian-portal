@@ -95,11 +95,7 @@ export class InviteAdminComponent {
           },
         }),
       )
-      .then(() => {
-        this.router.navigate([this.returnUrl || '']);
-      })
-      .catch(err => {
-        this.error = err;
-      });
+      .then(() => this.router.navigate([this.returnUrl || '']))
+      .catch(err => (this.error = err));
   }
 }

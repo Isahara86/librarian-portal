@@ -379,12 +379,6 @@ export class CreateUpdateBookComponent implements OnInit {
         categoryIds: this.selectedCategories.map(c => +c.id),
         newInventories: formValues.inventories
           .filter((inv, i) => {
-            console.log(
-              i + 1 > existingInventories.length && inv.serialNumber,
-              i + 1,
-              existingInventories.length,
-              inv.serialNumber,
-            );
             return i + 1 > existingInventories.length && inv.serialNumber;
           })
           .map(inv => ({ serialNumber: inv.serialNumber as string })),
@@ -406,12 +400,8 @@ export class CreateUpdateBookComponent implements OnInit {
           },
         }),
       )
-      .then(() => {
-        this.router.navigate(['']);
-      })
-      .catch(err => {
-        this.error = err;
-      });
+      .then(() => this.router.navigate(['']))
+      .catch(err => (this.error = err));
   }
 
   async createBook() {
@@ -447,12 +437,8 @@ export class CreateUpdateBookComponent implements OnInit {
           },
         }),
       )
-      .then(() => {
-        this.router.navigate(['']);
-      })
-      .catch(err => {
-        this.error = err;
-      });
+      .then(() => this.router.navigate(['']))
+      .catch(err => (this.error = err));
 
     // // TODO find solution
     // console.log(res);
@@ -473,23 +459,15 @@ export class CreateUpdateBookComponent implements OnInit {
   async createAuthor(name: string): Promise<void> {
     await this.dialogService
       .showLoadingUntil(this.createAuthorGQL.mutate({ input: { name } }))
-      .then(() => {
-        this.fetchAuthors();
-      })
-      .catch(err => {
-        this.error = err;
-      });
+      .then(() => this.fetchAuthors())
+      .catch(err => (this.error = err));
   }
 
   async createCategory(name: string): Promise<void> {
     await this.dialogService
       .showLoadingUntil(this.createCategoryGQL.mutate({ input: { name } }))
-      .then(() => {
-        this.fetchCategories();
-      })
-      .catch(err => {
-        this.error = err;
-      });
+      .then(() => this.fetchCategories())
+      .catch(err => (this.error = err));
   }
 
   checkIsInventoryNew(index: number): boolean {
