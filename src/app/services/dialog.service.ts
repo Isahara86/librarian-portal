@@ -51,13 +51,13 @@ export class DialogService {
     this.showLoading();
 
     return firstValueFrom(source).then(
-      (res: any) => {
+      res => {
         this.hide();
         return res;
       },
       err => {
         this.hide();
-        return err;
+        return Promise.reject(err);
       },
     );
   }
