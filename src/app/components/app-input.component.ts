@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
   template: ` <mat-form-field class="example-form-field" appearance="fill" style="width: 100%;">
     <mat-label *ngIf="label">{{ label }}</mat-label>
     <span *ngIf="prefix && userInput.value" matTextPrefix=>{{prefix}}</span>
-    <input matInput type="{{ type }}" formControlName="{{ controlName }}" #userInput />
+    <input matInput type="{{ type }}" formControlName="{{ controlName }}" #userInput (input)="validateValue($event)" />
     <button
       *ngIf="userInput.value"
       matSuffix
@@ -41,7 +41,19 @@ import { CommonModule } from '@angular/common';
 export class AppInputComponent {
   @Input() label?: string;
   @Input() type = 'text';
+  @Input() inputType = 'text';
   @Input() prefix: string | null = null;
   @Input() controlName!: string;
   @ViewChild('input') inputRef!: ElementRef;
+
+  validateValue(e: any) {
+    const value = e.target?.value;
+    if (this.inputType !== 'number' || !value) {
+      return;
+    }
+
+    if (/\D/g.test(value)) {
+      e.target.value = value.replace(/\D/g, '');
+    }
+  }
 }
