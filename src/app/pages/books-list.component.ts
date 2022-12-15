@@ -10,7 +10,6 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   standalone: true,
-  selector: 'app-books-list',
   template: `
     <table style="margin: 20px;" mat-table [dataSource]="books" class="mat-elevation-z8">
       <!--- Note that these columns can be defined in any order.

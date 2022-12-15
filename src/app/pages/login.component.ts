@@ -10,7 +10,6 @@ import { AppFormComponent } from '../components/app-form.component';
 
 @Component({
   standalone: true,
-  selector: 'app-login',
   template: `
     <app-form [formGroup]="loginForm" (formSubmit)="onSubmit()">
       <h2>Login</h2>
@@ -32,7 +31,7 @@ import { AppFormComponent } from '../components/app-form.component';
   ],
 })
 export class LoginComponent implements OnInit {
-  returnUrl!: string;
+  returnUrl = '/';
   error?: string;
 
   loginForm = this.formBuilder.group({
@@ -49,7 +48,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     // get return url from route parameters or default to '/'
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.returnUrl;
   }
 
   async onSubmit() {

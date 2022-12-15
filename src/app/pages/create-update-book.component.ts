@@ -40,7 +40,6 @@ import { DialogService } from '../services/dialog.service';
 
 @Component({
   standalone: true,
-  selector: 'app-create-book',
   template: `
     <app-form
       [formGroup]="createBookForm"

@@ -20,7 +20,6 @@ import {
 } from 'rxjs';
 
 @Component({
-  selector: 'app-customer-list',
   standalone: true,
   imports: [
     CommonModule,
@@ -56,7 +55,7 @@ import {
       <ng-container matColumnDef="info">
         <th mat-header-cell *matHeaderCellDef>Info</th>
         <td mat-cell *matCellDef="let customer">
-          <p class="customer-info">{{ customer.name }}</p>
+          <p class="customer-info" style="padding: 5px 0; font-weight: bold">{{ customer.name }}</p>
           <p class="customer-info" *ngIf="customer.phone">{{ customer.phone }}</p>
           <p class="customer-info" *ngIf="customer.email">{{ customer.email }}</p>
           <p class="customer-info" *ngIf="customer.description">{{ customer.description }}</p>

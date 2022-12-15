@@ -19,7 +19,6 @@ import { DialogService } from '../services/dialog.service';
 
 @Component({
   standalone: true,
-  selector: 'app-invite-admin',
   template: `
     <app-form [formGroup]="createForm" (formSubmit)="onSubmit()">
       <h2>Invite new librarian</h2>

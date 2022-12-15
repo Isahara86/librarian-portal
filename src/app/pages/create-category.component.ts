@@ -11,7 +11,6 @@ import { DialogService } from '../services/dialog.service';
 
 @Component({
   standalone: true,
-  selector: 'app-create-category',
   template: `
     <app-form [formGroup]="createForm" (formSubmit)="onSubmit()">
       <h2>Create Category</h2>
