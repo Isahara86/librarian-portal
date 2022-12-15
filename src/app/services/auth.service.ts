@@ -48,7 +48,6 @@ export class AuthService {
     const res = await this.dialogService.showLoadingUntil(
       this.adminLoginGQL.mutate({ input: { login, password } }),
     );
-    // const res = await firstValueFrom(this.adminLoginGQL.mutate({ input: { login, password } }));
 
     const admin = res?.data?.adminLogin;
     if (!admin) {

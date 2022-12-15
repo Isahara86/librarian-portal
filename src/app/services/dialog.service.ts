@@ -19,6 +19,10 @@ export class DialogService {
   ) {}
 
   public showLoading() {
+    if (this.dialogRef) {
+      this.hide();
+    }
+
     this.dialogRef = this.dialog.open(LoadingComponent, {
       panelClass: 'no-background',
       disableClose: true,
@@ -41,6 +45,7 @@ export class DialogService {
   public hide() {
     if (this.dialogRef) {
       this.dialogRef.close();
+      this.dialogRef = undefined;
     }
     // if (this.overlayRef) {
     //   this.overlayRef?.detach();
