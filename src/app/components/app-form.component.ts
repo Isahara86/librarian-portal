@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, merge, skipUntil, Subject, take, takeUntil } from 'rxjs';
 
@@ -14,7 +14,7 @@ import { debounceTime, merge, skipUntil, Subject, take, takeUntil } from 'rxjs';
   </form>`,
   imports: [ReactiveFormsModule],
 })
-export class AppFormComponent implements OnDestroy {
+export class AppFormComponent implements OnInit, OnDestroy {
   @Input() formGroup!: FormGroup;
   @Output() formSubmit = new EventEmitter<void>();
   private _onDestroy = new Subject<void>();
@@ -22,7 +22,12 @@ export class AppFormComponent implements OnDestroy {
   public submit$ = new Subject<void>();
 
   constructor() {
+    this.showPromptWhenHasUnsavedChanges = this.showPromptWhenHasUnsavedChanges.bind(this);
+  }
+
+  ngOnInit() {
     this.initFormSubmitDebounce();
+    window.addEventListener('beforeunload', this.showPromptWhenHasUnsavedChanges);
   }
 
   /*
@@ -37,8 +42,19 @@ export class AppFormComponent implements OnDestroy {
       .subscribe(() => this.formSubmit.emit());
   }
 
+  showPromptWhenHasUnsavedChanges(e: BeforeUnloadEvent): string | undefined {
+    if (!this.formGroup.touched) {
+      return;
+    }
+
+    const confirmationMessage = 'o/';
+    e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
+    return confirmationMessage; // Gecko, WebKit, Chrome <34
+  }
+
   ngOnDestroy() {
     this._onDestroy.next();
     this._onDestroy.complete();
+    window.removeEventListener('beforeunload', this.showPromptWhenHasUnsavedChanges);
   }
 }
