@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
+import { offsetSegment } from '@angular/compiler-cli/src/ngtsc/sourcemaps/src/segment_marker';
 
 @Component({
   standalone: true,
@@ -12,7 +13,11 @@ import { CommonModule } from '@angular/common';
   template: ` <mat-form-field class="example-form-field" appearance="fill" style="width: 100%;">
     <mat-label *ngIf="label">{{ label }}</mat-label>
     <span *ngIf="prefix && userInput.value" matTextPrefix=>{{prefix}}</span>
-    <input matInput type="{{ type }}" formControlName="{{ controlName }}" #userInput (input)="validateValue($event)" />
+    <input autocomplete="{{autocomplete}}"
+           matInput type="{{ type }}"
+           formControlName="{{ controlName }}"
+           #userInput
+           (input)="validateValue($event)" />
     <button
       *ngIf="userInput.value"
       matSuffix
@@ -41,6 +46,7 @@ import { CommonModule } from '@angular/common';
 export class AppInputComponent {
   @Input() label?: string;
   @Input() type = 'text';
+  @Input() autocomplete: 'on' | 'off' = 'off';
   @Input() inputType = 'text';
   @Input() prefix: string | null = null;
   @Input() controlName!: string;

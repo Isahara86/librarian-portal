@@ -14,8 +14,8 @@ import { AppFormComponent } from '../components/app-form.component';
     <app-form [formGroup]="loginForm" (formSubmit)="onSubmit()">
       <h2>Login</h2>
 
-      <app-input controlName="login" label="login"></app-input>
-      <app-input controlName="password" label="password"></app-input>
+      <app-input controlName="login" label="login" autocomplete="on"></app-input>
+      <app-input controlName="password" label="password" autocomplete="on"></app-input>
 
       <mat-error *ngIf="error">{{ error }}</mat-error>
       <button mat-flat-button color="primary" [disabled]="loginForm.invalid">Login</button>
