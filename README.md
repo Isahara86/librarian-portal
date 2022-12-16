@@ -6,13 +6,8 @@
 6. Hide serial number input / Add serial number auto generation
 7. Create book page remember
 8. Input validation at least 3 symbols
-9. [13:49, 10/12/2022] Одуванчик: Автор
-    Название книги
-    Описание
-    Инвентарь
-    [13:49, 10/12/2022] Одуванчик: Фото 
-10. Отключить автоподсказку инпутов
-11. Add book images gallery
-12. Add books pagination
-13. Add customers pagination ???
-14. У меня тоже перезагрузился сайт, и несохранённые данные о книге ушли. Неудобно. Несколько раз работу делать. Раньше такого не было
+9. Отключить автоподсказку инпутов
+10. Add book images gallery
+11. Add books pagination
+12. Add customers pagination ???
+13. У меня тоже перезагрузился сайт, и несохранённые данные о книге ушли. Неудобно. Несколько раз работу делать. Раньше такого не было

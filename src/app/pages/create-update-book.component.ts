@@ -1,16 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   AuthorsGQL,
   BookDetailsGQL,
   BookDetailsQuery,
-  BookInventoryCreateInput,
   CategoriesGQL,
   CreateAuthorGQL,
   CreateBookGQL,
@@ -37,6 +30,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { DialogService } from '../services/dialog.service';
+import { AppTextareaComponent } from '../components/app-textarea.component';
 
 @Component({
   standalone: true,
@@ -49,19 +43,6 @@ import { DialogService } from '../services/dialog.service';
 
       <app-input controlName="name" label="name"></app-input>
 
-      <app-input controlName="description" label="description"></app-input>
-
-      <app-multi-select
-        [initialState$]="initialLanguageState$"
-        [placeholder]="'Lang'"
-        (valueUpdated)="selectedLangcodes = $event"
-      ></app-multi-select>
-      <app-multi-select
-        [initialState$]="initialCategoryState$"
-        [placeholder]="'Categories'"
-        (valueUpdated)="selectedCategories = $event"
-        [createResource]="createCategory"
-      ></app-multi-select>
       <app-multi-select
         [initialState$]="initialAuthorState$"
         [placeholder]="'Authors'"
@@ -69,8 +50,20 @@ import { DialogService } from '../services/dialog.service';
         [createResource]="createAuthor"
       ></app-multi-select>
 
-      <!-- File Input -->
-      <div class="form-group"></div>
+      <app-textarea controlName="description" label="description"></app-textarea>
+
+      <app-multi-select
+        [initialState$]="initialLanguageState$"
+        [placeholder]="'Lang'"
+        (valueUpdated)="selectedLangcodes = $event"
+      ></app-multi-select>
+
+      <app-multi-select
+        [initialState$]="initialCategoryState$"
+        [placeholder]="'Categories'"
+        (valueUpdated)="selectedCategories = $event"
+        [createResource]="createCategory"
+      ></app-multi-select>
 
       <mat-card
         style="margin-bottom: 10px; height: 230px; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;"
@@ -89,43 +82,43 @@ import { DialogService } from '../services/dialog.service';
         />
       </mat-card>
 
-      <ng-container formArrayName="inventories">
-        <div>Inventories</div>
-        <ng-container
-          *ngFor="let inventory of this.createBookForm.controls.inventories.controls; let i = index"
-        >
-          <div [formGroupName]="i">
-            <mat-form-field appearance="fill">
-              <input
-                matInput
-                [value]="inventory.controls.serialNumber.value"
-                formControlName="serialNumber"
-                placeholder="Serial number"
-              />
-            </mat-form-field>
+      <!--      <ng-container formArrayName="inventories">-->
+      <!--        <div>Inventories</div>-->
+      <!--        <ng-container-->
+      <!--          *ngFor="let inventory of this.createBookForm.controls.inventories.controls; let i = index"-->
+      <!--        >-->
+      <!--          <div [formGroupName]="i">-->
+      <!--            <mat-form-field appearance="fill">-->
+      <!--              <input-->
+      <!--                matInput-->
+      <!--                [value]="inventory.controls.serialNumber.value"-->
+      <!--                formControlName="serialNumber"-->
+      <!--                placeholder="Serial number"-->
+      <!--              />-->
+      <!--            </mat-form-field>-->
 
-            <mat-icon
-              *ngIf="checkIsInventoryNew(i)"
-              class="delete-btn"
-              (click)="removeInventory(i)"
-            >
-              delete_forever
-            </mat-icon>
-          </div>
-        </ng-container>
-      </ng-container>
-
-      <div class="example-button-container">
-        <button
-          type="button"
-          (click)="addInventory()"
-          mat-mini-fab
-          color="primary"
-          aria-label="Example icon button with a plus one icon"
-        >
-          <mat-icon>plus_one</mat-icon>
-        </button>
-      </div>
+      <!--            <mat-icon-->
+      <!--              *ngIf="checkIsInventoryNew(i)"-->
+      <!--              class="delete-btn"-->
+      <!--              (click)="removeInventory(i)"-->
+      <!--            >-->
+      <!--              delete_forever-->
+      <!--            </mat-icon>-->
+      <!--          </div>-->
+      <!--        </ng-container>-->
+      <!--      </ng-container>-->
+      <!---->
+      <!--      <div class="example-button-container">-->
+      <!--        <button-->
+      <!--          type="button"-->
+      <!--          (click)="addInventory()"-->
+      <!--          mat-mini-fab-->
+      <!--          color="primary"-->
+      <!--          aria-label="Example icon button with a plus one icon"-->
+      <!--        >-->
+      <!--          <mat-icon>plus_one</mat-icon>-->
+      <!--        </button>-->
+      <!--      </div>-->
 
       <mat-error *ngIf="error">{{ error }}</mat-error>
       <button
@@ -171,6 +164,7 @@ import { DialogService } from '../services/dialog.service';
     MatInputModule,
     MatIconModule,
     MatButtonModule,
+    AppTextareaComponent,
   ],
 })
 export class CreateUpdateBookComponent implements OnInit {
@@ -179,10 +173,10 @@ export class CreateUpdateBookComponent implements OnInit {
   createBookForm = this.formBuilder.group({
     name: ['', Validators.required],
     description: [''],
-    inventories: this.formBuilder.array<FormGroup<{ serialNumber: FormControl<string | null> }>>(
-      [this.buildFormInventoryItem()],
-      Validators.required,
-    ),
+    // inventories: this.formBuilder.array<FormGroup<{ serialNumber: FormControl<string | null> }>>(
+    //   [this.buildFormInventoryItem()],
+    //   Validators.required,
+    // ),
   });
 
   initialLanguageState$ = new BehaviorSubject<MultiselectInitialState>({
@@ -257,12 +251,12 @@ export class CreateUpdateBookComponent implements OnInit {
 
     this.preview = book.previewUrl;
 
-    if (book.inventories.length) {
-      this.createBookForm.controls.inventories.controls[0].patchValue(book.inventories[0]);
-      for (let i = 1; i < book.inventories.length; i++) {
-        this.addInventory(book.inventories[i].serialNumber);
-      }
-    }
+    // if (book.inventories.length) {
+    //   this.createBookForm.controls.inventories.controls[0].patchValue(book.inventories[0]);
+    //   for (let i = 1; i < book.inventories.length; i++) {
+    //     this.addInventory(book.inventories[i].serialNumber);
+    //   }
+    // }
   }
 
   async fetchBookDetails(): Promise<{ book?: BookDetailsQuery; bookFindError?: string }> {
@@ -324,20 +318,20 @@ export class CreateUpdateBookComponent implements OnInit {
     this.initialAuthorState$.next({ available, selected });
   }
 
-  addInventory(serialNumber = ''): void {
-    const inventory = this.buildFormInventoryItem(serialNumber);
-    this.createBookForm.controls.inventories.push(inventory);
-  }
-
-  buildFormInventoryItem(serialNumber = '') {
-    return this.formBuilder.group({
-      serialNumber: [serialNumber, [Validators.required, Validators.minLength(3)]],
-    });
-  }
-
-  removeInventory(inventoryIndex: number): void {
-    this.createBookForm.controls.inventories.removeAt(inventoryIndex);
-  }
+  // addInventory(serialNumber = ''): void {
+  //   const inventory = this.buildFormInventoryItem(serialNumber);
+  //   this.createBookForm.controls.inventories.push(inventory);
+  // }
+  //
+  // removeInventory(inventoryIndex: number): void {
+  //   this.createBookForm.controls.inventories.removeAt(inventoryIndex);
+  // }
+  //
+  // buildFormInventoryItem(serialNumber = '') {
+  //   return this.formBuilder.group({
+  //     serialNumber: [serialNumber, [Validators.required, Validators.minLength(3)]],
+  //   });
+  // }
 
   updateFile(event: unknown) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -376,15 +370,17 @@ export class CreateUpdateBookComponent implements OnInit {
         preview: this.file,
         authorIds: this.selectedAuthors.map(a => +a.id),
         categoryIds: this.selectedCategories.map(c => +c.id),
-        newInventories: formValues.inventories
-          .filter((inv, i) => {
-            return i + 1 > existingInventories.length && inv.serialNumber;
-          })
-          .map(inv => ({ serialNumber: inv.serialNumber as string })),
-        updatedInventories: existingInventories.map((inv, index) => ({
-          id: inv.id,
-          serialNumber: formValues.inventories[index].serialNumber as string,
-        })),
+        newInventories: [],
+        updatedInventories: [],
+        // newInventories: formValues.inventories
+        //   .filter((inv, i) => {
+        //     return i + 1 > existingInventories.length && inv.serialNumber;
+        //   })
+        //   .map(inv => ({ serialNumber: inv.serialNumber as string })),
+        // updatedInventories: existingInventories.map((inv, index) => ({
+        //   id: inv.id,
+        //   serialNumber: formValues.inventories[index].serialNumber as string,
+        // })),
         languages: this.selectedLangcodes.map(l => l.id),
       },
     };
@@ -410,9 +406,9 @@ export class CreateUpdateBookComponent implements OnInit {
       return;
     }
 
-    const inventories: ReadonlyArray<BookInventoryCreateInput> = formValues.inventories.map(
-      inv => ({ serialNumber: inv.serialNumber as string }),
-    );
+    // const inventories: ReadonlyArray<BookInventoryCreateInput> = formValues.inventories.map(
+    //   inv => ({ serialNumber: inv.serialNumber as string }),
+    // );
 
     const variables: CreateBookMutationVariables = {
       input: {
@@ -421,7 +417,7 @@ export class CreateUpdateBookComponent implements OnInit {
         preview: this.file,
         authorIds: this.selectedAuthors.map(a => +a.id),
         categoryIds: this.selectedCategories.map(c => +c.id),
-        inventories,
+        inventories: [{ serialNumber: '111' }],
         languages: this.selectedLangcodes.map(l => l.id),
       },
     };

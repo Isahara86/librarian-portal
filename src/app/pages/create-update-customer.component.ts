@@ -24,6 +24,7 @@ import { isValidPhoneNumber } from 'libphonenumber-js';
 import { DialogService } from '../services/dialog.service';
 import { firstValueFrom } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
+import { AppTextareaComponent } from '../components/app-textarea.component';
 
 @Component({
   standalone: true,
@@ -36,6 +37,7 @@ import { MatInputModule } from '@angular/material/input';
     AppInputComponent,
     MatButtonModule,
     MatInputModule,
+    AppTextareaComponent,
   ],
   template: `
     <app-form [formGroup]="customerForm" (formSubmit)="onSubmit()">
@@ -50,17 +52,7 @@ import { MatInputModule } from '@angular/material/input';
       ></app-input>
       <app-input controlName="email" label="email"></app-input>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Description</mat-label>
-        <textarea
-          matInput
-          formControlName="description"
-          cdkTextareaAutosize
-          #autosize="cdkTextareaAutosize"
-          cdkAutosizeMinRows="1"
-          cdkAutosizeMaxRows="5"
-        ></textarea>
-      </mat-form-field>
+      <app-textarea controlName="description" label="description"></app-textarea>
 
       <mat-error *ngIf="error">{{ error }}</mat-error>
       <button mat-flat-button color="primary" [disabled]="customerForm.invalid">
