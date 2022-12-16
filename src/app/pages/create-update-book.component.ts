@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   AuthorsGQL,
@@ -19,7 +19,7 @@ import {
   MultiselectInitialState,
   MultiselectItem,
 } from '../components/multi-select.component';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, debounceTime, firstValueFrom, Subject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AppFormComponent } from '../components/app-form.component';
@@ -31,14 +31,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { DialogService } from '../services/dialog.service';
 import { AppTextareaComponent } from '../components/app-textarea.component';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   standalone: true,
   template: `
-    <app-form
-      [formGroup]="createBookForm"
-      (formSubmit)="bookForUpdate ? updateBook() : createBook()"
-    >
+    <app-form [formGroup]="bookForm" (formSubmit)="bookForUpdate ? updateBook() : createBook()">
       <h2>{{ bookForUpdate ? 'Update Book' : 'Create Book' }}</h2>
 
       <app-input controlName="name" label="name"></app-input>
@@ -46,7 +45,7 @@ import { AppTextareaComponent } from '../components/app-textarea.component';
       <app-multi-select
         [initialState$]="initialAuthorState$"
         [placeholder]="'Authors'"
-        (valueUpdated)="selectedAuthors = $event"
+        (valueUpdated)="stateChange$.next(null); selectedAuthors = $event"
         [createResource]="createAuthor"
       ></app-multi-select>
 
@@ -55,13 +54,13 @@ import { AppTextareaComponent } from '../components/app-textarea.component';
       <app-multi-select
         [initialState$]="initialLanguageState$"
         [placeholder]="'Lang'"
-        (valueUpdated)="selectedLangcodes = $event"
+        (valueUpdated)="stateChange$.next(null); selectedLangcodes = $event"
       ></app-multi-select>
 
       <app-multi-select
         [initialState$]="initialCategoryState$"
         [placeholder]="'Categories'"
-        (valueUpdated)="selectedCategories = $event"
+        (valueUpdated)="stateChange$.next(null); selectedCategories = $event"
         [createResource]="createCategory"
       ></app-multi-select>
 
@@ -121,12 +120,7 @@ import { AppTextareaComponent } from '../components/app-textarea.component';
       <!--      </div>-->
 
       <mat-error *ngIf="error">{{ error }}</mat-error>
-      <button
-        style="margin: 20px 0;"
-        mat-flat-button
-        color="primary"
-        [disabled]="createBookForm.invalid"
-      >
+      <button style="margin: 20px 0;" mat-flat-button color="primary" [disabled]="bookForm.invalid">
         {{ bookForUpdate ? 'Save' : 'Create' }}
       </button>
     </app-form>
@@ -167,10 +161,10 @@ import { AppTextareaComponent } from '../components/app-textarea.component';
     AppTextareaComponent,
   ],
 })
-export class CreateUpdateBookComponent implements OnInit {
+export class CreateUpdateBookComponent implements OnInit, OnDestroy {
   error?: string;
   bookForUpdate?: BookDetailsQuery['bookDetails'];
-  createBookForm = this.formBuilder.group({
+  bookForm = this.formBuilder.group({
     name: ['', Validators.required],
     description: [''],
     // inventories: this.formBuilder.array<FormGroup<{ serialNumber: FormControl<string | null> }>>(
@@ -197,6 +191,9 @@ export class CreateUpdateBookComponent implements OnInit {
 
   file?: File;
   preview?: string | null;
+
+  readonly stateChange$ = new Subject<unknown>();
+  readonly SESSION_STORAGE_KEY = 'BOOK_FORM_STATE';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -231,22 +228,29 @@ export class CreateUpdateBookComponent implements OnInit {
     }
 
     await Promise.all([
-      this.fetchLanguages(
+      this.initLanguages(
         book?.bookDetails.languages?.map(({ code, name }) => ({ id: code, name })),
       ),
-      this.fetchCategories(
+      this.initCategories(
         book?.bookDetails.categories.map(({ id, name }) => ({ id: id.toString(), name })),
       ),
-      this.fetchAuthors(
+      this.initAuthors(
         book?.bookDetails.authors.map(({ id, name }) => ({ id: id.toString(), name })),
       ),
     ]);
+
+    this.restorePreservedState();
+    this.subscribeStateChange();
+  }
+
+  ngOnDestroy() {
+    this.clearStateCache();
   }
 
   fillBookForm(book: BookDetailsQuery['bookDetails']) {
-    this.createBookForm.controls.name.patchValue(book.name);
+    this.bookForm.controls.name.patchValue(book.name);
     if (book.description) {
-      this.createBookForm.controls.description.patchValue(book.description);
+      this.bookForm.controls.description.patchValue(book.description);
     }
 
     this.preview = book.previewUrl;
@@ -286,17 +290,18 @@ export class CreateUpdateBookComponent implements OnInit {
     return result;
   }
 
-  async fetchLanguages(selected: MultiselectItem[] = []): Promise<void> {
+  async initLanguages(selected: MultiselectItem[] = []): Promise<void> {
     const availableLanguages = await firstValueFrom(this.languagesGQL.fetch());
     const available =
       availableLanguages?.data.languages.map(({ code, name }) => ({
         id: code,
         name,
       })) || [];
+
     this.initialLanguageState$.next({ available, selected });
   }
 
-  async fetchCategories(selected: MultiselectItem[] = []): Promise<void> {
+  async initCategories(selected: MultiselectItem[] = []): Promise<void> {
     const categories = await firstValueFrom(
       this.categoriesGQL.fetch({ input: { offset: 0, limit: 100 } }),
     );
@@ -309,12 +314,13 @@ export class CreateUpdateBookComponent implements OnInit {
     this.initialCategoryState$.next({ available, selected });
   }
 
-  async fetchAuthors(selected: MultiselectItem[] = []): Promise<void> {
+  async initAuthors(selected: MultiselectItem[] = []): Promise<void> {
     const authors = await firstValueFrom(
       this.authorsGQL.fetch({ input: { offset: 0, limit: 500 } }),
     );
     const available =
       authors?.data.authors.map(({ id, name }) => ({ id: id.toString(), name })) || [];
+
     this.initialAuthorState$.next({ available, selected });
   }
 
@@ -354,7 +360,7 @@ export class CreateUpdateBookComponent implements OnInit {
       return;
     }
 
-    const formValues = this.createBookForm.getRawValue();
+    const formValues = this.bookForm.getRawValue();
 
     if (!formValues.name) {
       return;
@@ -400,7 +406,7 @@ export class CreateUpdateBookComponent implements OnInit {
   }
 
   async createBook() {
-    const formValues = this.createBookForm.getRawValue();
+    const formValues = this.bookForm.getRawValue();
 
     if (!formValues.name) {
       return;
@@ -454,18 +460,81 @@ export class CreateUpdateBookComponent implements OnInit {
   async createAuthor(name: string): Promise<void> {
     await this.dialogService
       .showLoadingUntil(this.createAuthorGQL.mutate({ input: { name } }))
-      .then(() => this.fetchAuthors())
+      .then(() => this.initAuthors())
       .catch(err => (this.error = err));
   }
 
   async createCategory(name: string): Promise<void> {
     await this.dialogService
       .showLoadingUntil(this.createCategoryGQL.mutate({ input: { name } }))
-      .then(() => this.fetchCategories())
+      .then(() => this.initCategories())
       .catch(err => (this.error = err));
   }
 
   checkIsInventoryNew(index: number): boolean {
     return !this.bookForUpdate?.inventories[index];
   }
+
+  restorePreservedState(): void {
+    try {
+      const storedData = sessionStorage.getItem(this.SESSION_STORAGE_KEY);
+      if (storedData) {
+        const preservedState: State = JSON.parse(storedData);
+
+        this.bookForm.controls.name.patchValue(preservedState.name);
+        this.bookForm.controls.description.patchValue(preservedState.description);
+
+        this.initialLanguageState$.next({
+          ...this.initialLanguageState$.getValue(),
+          selected: preservedState.selectedLangcodes,
+        });
+        this.initialCategoryState$.next({
+          ...this.initialCategoryState$.getValue(),
+          selected: preservedState.selectedAuthors,
+        });
+        this.initialAuthorState$.next({
+          ...this.initialAuthorState$.getValue(),
+          selected: preservedState.selectedAuthors,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  subscribeStateChange(): void {
+    this.bookForm.valueChanges.subscribe(this.stateChange$);
+
+    this.stateChange$
+      .pipe(untilDestroyed(this), debounceTime(500))
+      .subscribe(() => this.preserveState());
+  }
+
+  preserveState(): void {
+    sessionStorage.setItem(this.SESSION_STORAGE_KEY, JSON.stringify(this.getState()));
+  }
+
+  clearStateCache(): void {
+    sessionStorage.removeItem(this.SESSION_STORAGE_KEY);
+  }
+
+  getState(): State {
+    return {
+      name: this.bookForm.controls.name.value,
+      description: this.bookForm.controls.description.value,
+      // preview: this.file,
+      selectedAuthors: this.selectedAuthors,
+      selectedCategories: this.selectedCategories,
+      selectedLangcodes: this.selectedLangcodes,
+    };
+  }
+}
+
+interface State {
+  name: string | null;
+  description: string | null;
+  // preview: this.file,
+  selectedAuthors: MultiselectItem[];
+  selectedCategories: MultiselectItem[];
+  selectedLangcodes: MultiselectItem[];
 }

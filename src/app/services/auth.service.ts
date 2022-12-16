@@ -7,7 +7,7 @@ import { HttpLink } from 'apollo-angular/http';
 import { DialogService } from './dialog.service';
 import { Router } from '@angular/router';
 
-export const ADMIN_STORAGE_KEY = 'admin_user';
+const ADMIN_STORAGE_KEY = 'admin_user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

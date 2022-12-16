@@ -3,18 +3,18 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
-import { BehaviorSubject, ReplaySubject, Subject, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, ReplaySubject, take } from 'rxjs';
 import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 export interface MultiselectItem {
   id: string;
@@ -26,6 +26,7 @@ export interface MultiselectInitialState {
   selected: MultiselectItem[];
 }
 
+@UntilDestroy()
 @Component({
   standalone: true,
   selector: 'app-multi-select',
@@ -78,7 +79,7 @@ export interface MultiselectInitialState {
     CommonModule,
   ],
 })
-export class MultiSelectComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MultiSelectComponent implements OnInit, AfterViewInit {
   @Output() valueUpdated = new EventEmitter<MultiselectItem[]>();
   @Input() initialState$!: BehaviorSubject<MultiselectInitialState>;
   @Input() placeholder?: string;
@@ -98,9 +99,6 @@ export class MultiSelectComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('singleSelect', { static: true })
   singleSelect!: MatSelect;
 
-  /** Subject that emits when the component has been destroyed. */
-  protected _onDestroy = new Subject<void>();
-
   /** flags to set the toggle all checkbox state */
   isIndeterminate = false;
   isChecked = false;
@@ -109,15 +107,16 @@ export class MultiSelectComponent implements OnInit, AfterViewInit, OnDestroy {
     // // set initial selection
     // this.carCtrl.setValue([this.cars[1], this.cars[2]]);
 
-    this.initialState$.pipe(takeUntil(this._onDestroy)).subscribe(({ available, selected }) => {
+    this.initialState$.pipe(untilDestroyed(this)).subscribe(({ available, selected }) => {
       this.availableItems = available;
       this.itemCtrl.patchValue(selected);
+      this.valueUpdated.emit(selected);
       // load the initial list
       this.filteredItems.next(this.availableItems.slice());
     });
 
     // listen for search field value changes
-    this.itemFilterCtrl.valueChanges.pipe(takeUntil(this._onDestroy)).subscribe(() => {
+    this.itemFilterCtrl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
       this.filterItems();
     });
   }
@@ -126,16 +125,11 @@ export class MultiSelectComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setInitialValue();
   }
 
-  ngOnDestroy() {
-    this._onDestroy.next();
-    this._onDestroy.complete();
-  }
-
   /**
    * Sets the initial value after the filteredCars are loaded initially
    */
   protected setInitialValue() {
-    this.filteredItems.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
+    this.filteredItems.pipe(take(1), untilDestroyed(this)).subscribe(() => {
       this.singleSelect.compareWith = (a: MultiselectItem, b: MultiselectItem) =>
         a && b && a.id === b.id;
     });

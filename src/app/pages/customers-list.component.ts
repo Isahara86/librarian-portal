@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CustomersGQL, CustomersQuery } from '../@graphql/_generated';
 import { MatTableModule } from '@angular/material/table';
@@ -14,11 +14,11 @@ import {
   filter,
   firstValueFrom,
   fromEvent,
-  Subject,
-  takeUntil,
   tap,
 } from 'rxjs';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   standalone: true,
   imports: [
@@ -91,12 +91,11 @@ import {
     `,
   ],
 })
-export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CustomersListComponent implements OnInit, AfterViewInit {
   customers: CustomersQuery['customers'] = [];
   displayedColumns: string[] = ['info', 'Actions'];
   search = '';
   @ViewChild('searchInput') searchInput!: ElementRef;
-  private _onDestroy = new Subject<void>();
 
   constructor(private customersGQL: CustomersGQL) {}
 
@@ -110,17 +109,12 @@ export class CustomersListComponent implements OnInit, AfterViewInit, OnDestroy 
         filter(Boolean),
         debounceTime(150),
         distinctUntilChanged(),
-        takeUntil(this._onDestroy),
+        untilDestroyed(this),
         tap(() => {
           this.fetchCustomers(this.searchInput.nativeElement.value).then();
         }),
       )
       .subscribe();
-  }
-
-  ngOnDestroy() {
-    this._onDestroy.next();
-    this._onDestroy.complete();
   }
 
   async fetchCustomers(query?: string): Promise<void> {
