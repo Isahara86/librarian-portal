@@ -1,93 +1,143 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { BooksListGQL, BooksListQuery } from '../@graphql/_generated';
-import { first } from 'rxjs';
-import { RouterLink } from '@angular/router';
+import { filter, firstValueFrom, map, pairwise, throttleTime } from 'rxjs';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { SearchComponent } from '../components/search.component';
+import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatLineModule } from '@angular/material/core';
+import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   standalone: true,
   template: `
-    <table style="margin: 20px;" mat-table [dataSource]="books" class="mat-elevation-z8">
-      <!--- Note that these columns can be defined in any order.
-            The actual rendered columns are set as a property on the row definition" -->
+    <app-search style="flex: 1" (valueChanged)="onSearchUpdate($event)"></app-search>
 
-      <!-- Position Column -->
-      <ng-container matColumnDef="previewUrl">
-        <th mat-header-cell *matHeaderCellDef>Preview</th>
-        <td mat-cell *matCellDef="let element">
+    <cdk-virtual-scroll-viewport #scroller class="content" itemSize="90">
+      <mat-list-item *ngFor="let book of books" (click)="goToBookDetails(book.id)">
+        <div style="display: flex; flex-direction: row; height: 90px; padding-left: 20px">
           <img
-            style="width: 50px; height: 50px;"
+            style="max-height: 100%; width: auto;"
             mat-card-image
-            [src]="element.previewUrl || '/assets/camera-icon.png'"
-            alt="Photo of a Shiba Inu"
+            [src]="book.previewUrl || '/assets/camera-icon.png'"
+            alt="{{ book.previewUrl }}"
           />
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef>Description</th>
-        <td mat-cell *matCellDef="let element">{{ element.description }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="isAvailable">
-        <th mat-header-cell *matHeaderCellDef>isAvailable</th>
-        <td mat-cell *matCellDef="let element">{{ element.isAvailable }}</td>
-      </ng-container>
-
-      <ng-container *ngIf="authService.admin$ | async" matColumnDef="Actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let element">
-          <mat-icon [routerLink]="['update-book', element.id]" fontIcon="edit"></mat-icon>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="getColumns()"></tr>
-      <tr mat-row *matRowDef="let row; columns: getColumns()"></tr>
-    </table>
+          <h3 matLine style="padding-left: 20px;">{{ book.name }}</h3>
+          <!--        <p matLine>-->
+          <!--          <span> {{ book.description }} </span>-->
+          <!--        </p>-->
+        </div>
+      </mat-list-item>
+      <div class="spinner-item">
+        <mat-progress-spinner *ngIf="hasMore" [mode]="'indeterminate'" [diameter]="50">
+        </mat-progress-spinner>
+        <p *ngIf="!hasMore">End</p>
+      </div>
+    </cdk-virtual-scroll-viewport>
   `,
-  imports: [CommonModule, MatTableModule, MatCardModule, MatIconModule, RouterLink],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatIconModule,
+    RouterLink,
+    SearchComponent,
+    MatListModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatLineModule,
+    ScrollingModule,
+    MatProgressSpinnerModule,
+  ],
   styles: [
     `
-      table {
-        width: 100%;
+      .content {
+        height: calc(100vh - 150px);
+        overflow: auto;
+      }
+      .spinner-item {
+        display: grid;
+        place-items: center;
+        margin-top: 10px;
       }
     `,
   ],
 })
-export class BooksListComponent implements OnInit {
+export class BooksListComponent implements OnInit, AfterViewInit {
   books: BooksListQuery['books'] = [];
-  private displayedColumns: string[] = [
-    'previewUrl',
-    'name',
-    'description',
-    'isAvailable',
-    'Actions',
-  ];
+  offset = 0;
+  limit = 15;
+  query?: string;
+  hasMore = true;
+  @ViewChild('scroller') scroller!: CdkVirtualScrollViewport;
 
-  constructor(private booksListGQL: BooksListGQL, readonly authService: AuthService) {}
+  constructor(
+    private booksListGQL: BooksListGQL,
+    readonly authService: AuthService,
+    private router: Router,
+    private ngZone: NgZone,
+  ) {}
 
   ngOnInit(): void {
-    this.booksListGQL
-      .fetch({ input: { offset: 0, limit: 10 } })
-      .pipe(first())
-      .subscribe(res => {
-        this.books = res.data.books;
-      });
+    this.fetchBooks().then(() => this.fetchMore());
   }
 
-  getColumns(): string[] {
+  ngAfterViewInit(): void {
+    this.initScroll();
+  }
+
+  initScroll() {
+    this.scroller
+      .elementScrolled()
+      .pipe(
+        map(() => this.scroller.measureScrollOffset('bottom')),
+        pairwise(),
+        filter(([y1, y2]) => y2 < y1 && y2 < 140 && this.hasMore),
+        throttleTime(200),
+      )
+      .subscribe(() => this.ngZone.run(() => this.fetchMore()));
+  }
+
+  async onSearchUpdate(query?: string): Promise<void> {
+    this.query = query;
+    this.books = [];
+    this.offset = 0;
+    this.hasMore = true;
+    return this.fetchBooks().then(() => this.fetchMore());
+  }
+
+  async fetchMore(): Promise<void> {
+    this.offset += this.limit;
+    return this.fetchBooks();
+  }
+
+  async fetchBooks(): Promise<void> {
+    return firstValueFrom(
+      this.booksListGQL.fetch({
+        input: {
+          offset: this.offset,
+          limit: this.limit,
+          ...(this.query && { query: this.query }),
+        },
+      }),
+    ).then(res => {
+      if (res.data) {
+        this.books = [...this.books, ...res.data.books];
+        if (res.data.books.length < this.limit) {
+          this.hasMore = false;
+        }
+      }
+    });
+  }
+
+  goToBookDetails(bookId: number): void {
     if (this.authService.admin$.getValue()) {
-      return this.displayedColumns;
+      this.router.navigate(['update-book', bookId]);
     }
-    return this.displayedColumns.filter(c => c !== 'Actions');
   }
 }
