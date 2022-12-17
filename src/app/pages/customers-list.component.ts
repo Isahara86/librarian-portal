@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CustomersGQL, CustomersQuery } from '../@graphql/_generated';
 import { MatTableModule } from '@angular/material/table';
@@ -6,19 +6,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  firstValueFrom,
-  fromEvent,
-  tap,
-} from 'rxjs';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { firstValueFrom } from 'rxjs';
+import { SearchComponent } from '../components/search.component';
 
-@UntilDestroy()
 @Component({
   standalone: true,
   imports: [
@@ -28,15 +18,11 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
     RouterLink,
     MatButtonModule,
     FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
+    SearchComponent,
   ],
   template: `
     <div style="width: 100vw; display: flex;">
-      <mat-form-field style="margin-bottom: -1.25em; flex: 1">
-        <input type="tel" matInput placeholder="Search" name="search" #searchInput />
-        <button matSuffix mat-button><mat-icon>search</mat-icon></button>
-      </mat-form-field>
+      <app-search style="flex: 1" (valueChanged)="fetchCustomers($event)"></app-search>
       <a
         [routerLink]="['/', 'create-customer']"
         mat-stroked-button
@@ -91,30 +77,15 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
     `,
   ],
 })
-export class CustomersListComponent implements OnInit, AfterViewInit {
+export class CustomersListComponent implements OnInit {
   customers: CustomersQuery['customers'] = [];
   displayedColumns: string[] = ['info', 'Actions'];
   search = '';
-  @ViewChild('searchInput') searchInput!: ElementRef;
 
   constructor(private customersGQL: CustomersGQL) {}
 
   ngOnInit(): void {
     this.fetchCustomers().then();
-  }
-
-  ngAfterViewInit() {
-    fromEvent(this.searchInput.nativeElement, 'keyup')
-      .pipe(
-        filter(Boolean),
-        debounceTime(150),
-        distinctUntilChanged(),
-        untilDestroyed(this),
-        tap(() => {
-          this.fetchCustomers(this.searchInput.nativeElement.value).then();
-        }),
-      )
-      .subscribe();
   }
 
   async fetchCustomers(query?: string): Promise<void> {
