@@ -4,3 +4,5 @@
 4. Book reservation for admin
 5. Book reservation for customer
 6. Add book images gallery
+7. Добавить подрезку фото
+8. Добавить миниатюры для фото
