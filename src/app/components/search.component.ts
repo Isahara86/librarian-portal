@@ -21,7 +21,7 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [CommonModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
   template: `
     <mat-form-field style="margin-bottom: -1.25em; width: 100%;">
-      <input type="tel" matInput placeholder="Search" name="search" #searchInput />
+      <input type="text" matInput placeholder="Search" name="search" #searchInput />
       <button matSuffix mat-button><mat-icon>search</mat-icon></button>
     </mat-form-field>
   `,
