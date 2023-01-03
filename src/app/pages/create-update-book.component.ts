@@ -32,6 +32,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { DialogService } from '../services/dialog.service';
 import { AppTextareaComponent } from '../components/app-textarea.component';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { StorageService } from '../services/storage.service';
 
 @UntilDestroy()
 @Component({
@@ -163,6 +164,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 })
 export class CreateUpdateBookComponent implements OnInit, OnDestroy {
   error?: string;
+  bookIdParam: string | null = null;
   bookForUpdate?: BookDetailsQuery['bookDetails'];
   bookForm = this.formBuilder.group({
     name: ['', Validators.required],
@@ -193,7 +195,7 @@ export class CreateUpdateBookComponent implements OnInit, OnDestroy {
   preview?: string | null;
 
   readonly stateChange$ = new Subject<unknown>();
-  readonly SESSION_STORAGE_KEY = 'BOOK_FORM_STATE';
+  readonly CACHE_TTL_MS = 300000;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -209,12 +211,15 @@ export class CreateUpdateBookComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private dialogService: DialogService,
+    private storageService: StorageService,
   ) {
     this.createAuthor = this.createAuthor.bind(this);
     this.createCategory = this.createCategory.bind(this);
   }
 
   async ngOnInit(): Promise<void> {
+    this.bookIdParam = this.route.snapshot.paramMap.get('bookId');
+
     const { book, bookFindError } = await this.fetchBookDetails();
 
     if (bookFindError) {
@@ -244,7 +249,11 @@ export class CreateUpdateBookComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.clearStateCache();
+    this.storageService.remove(this.STORAGE_KEY);
+  }
+
+  get STORAGE_KEY(): string {
+    return 'BOOK_FORM_STATE' + this.bookIdParam;
   }
 
   fillBookForm(book: BookDetailsQuery['bookDetails']) {
@@ -269,12 +278,11 @@ export class CreateUpdateBookComponent implements OnInit, OnDestroy {
       bookFindError: undefined,
     };
 
-    const bookIdParam = this.route.snapshot.paramMap.get('bookId');
-    if (!bookIdParam) {
+    if (!this.bookIdParam) {
       return result;
     }
 
-    const bookIdFromRoute = Number(bookIdParam);
+    const bookIdFromRoute = Number(this.bookIdParam);
 
     if (Number.isInteger(bookIdFromRoute)) {
       const res = await firstValueFrom(this.bookDetailsGQL.fetch({ id: bookIdFromRoute }));
@@ -366,7 +374,7 @@ export class CreateUpdateBookComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const existingInventories = this.bookForUpdate.inventories;
+    // const existingInventories = this.bookForUpdate.inventories;
 
     const variables: UpdateBookMutationVariables = {
       input: {
@@ -476,29 +484,23 @@ export class CreateUpdateBookComponent implements OnInit, OnDestroy {
   }
 
   restorePreservedState(): void {
-    try {
-      const storedData = sessionStorage.getItem(this.SESSION_STORAGE_KEY);
-      if (storedData) {
-        const preservedState: State = JSON.parse(storedData);
+    const preservedState = this.storageService.get<State>(this.STORAGE_KEY);
+    if (preservedState) {
+      this.bookForm.controls.name.patchValue(preservedState.name);
+      this.bookForm.controls.description.patchValue(preservedState.description);
 
-        this.bookForm.controls.name.patchValue(preservedState.name);
-        this.bookForm.controls.description.patchValue(preservedState.description);
-
-        this.initialLanguageState$.next({
-          ...this.initialLanguageState$.getValue(),
-          selected: preservedState.selectedLangcodes,
-        });
-        this.initialCategoryState$.next({
-          ...this.initialCategoryState$.getValue(),
-          selected: preservedState.selectedAuthors,
-        });
-        this.initialAuthorState$.next({
-          ...this.initialAuthorState$.getValue(),
-          selected: preservedState.selectedAuthors,
-        });
-      }
-    } catch (err) {
-      console.log(err);
+      this.initialLanguageState$.next({
+        ...this.initialLanguageState$.getValue(),
+        selected: preservedState.selectedLangcodes,
+      });
+      this.initialCategoryState$.next({
+        ...this.initialCategoryState$.getValue(),
+        selected: preservedState.selectedAuthors,
+      });
+      this.initialAuthorState$.next({
+        ...this.initialAuthorState$.getValue(),
+        selected: preservedState.selectedAuthors,
+      });
     }
   }
 
@@ -507,15 +509,9 @@ export class CreateUpdateBookComponent implements OnInit, OnDestroy {
 
     this.stateChange$
       .pipe(untilDestroyed(this), debounceTime(500))
-      .subscribe(() => this.preserveState());
-  }
-
-  preserveState(): void {
-    sessionStorage.setItem(this.SESSION_STORAGE_KEY, JSON.stringify(this.getState()));
-  }
-
-  clearStateCache(): void {
-    sessionStorage.removeItem(this.SESSION_STORAGE_KEY);
+      .subscribe(() =>
+        this.storageService.set(this.STORAGE_KEY, this.getState(), Date.now() + this.CACHE_TTL_MS),
+      );
   }
 
   getState(): State {
