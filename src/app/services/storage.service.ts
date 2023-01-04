@@ -26,6 +26,6 @@ export class StorageService {
   }
 
   remove(key: string): void {
-    sessionStorage.removeItem(key);
+    localStorage.removeItem(key);
   }
 }
