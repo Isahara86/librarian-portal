@@ -13,6 +13,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatLineModule } from '@angular/material/core';
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { BookIconComponent } from '../components/book-icon.component';
 
 @Component({
   standalone: true,
@@ -22,12 +23,18 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     <cdk-virtual-scroll-viewport #scroller class="content" itemSize="90">
       <mat-list-item *ngFor="let book of books" (click)="goToBookDetails(book.id)">
         <div style="display: flex; flex-direction: row; height: 90px; padding-left: 20px">
-          <img
-            style="max-height: 100%; width: auto;"
-            mat-card-image
-            [src]="book.previewUrl || '/assets/camera-icon.png'"
-            alt="{{ book.previewUrl }}"
-          />
+          <app-book-icon
+            imgStyle="{{ 'max-height: 100%; width: auto;' }}"
+            [jpeg]="book.previewJpegThumbnail"
+            [webp]="book.previewWebpThumbnail"
+            [orig]="book.previewOrig"
+          ></app-book-icon>
+          <!--          <img-->
+          <!--            style="max-height: 100%; width: auto;"-->
+          <!--            mat-card-image-->
+          <!--            [src]="book.previewUrl || '/assets/camera-icon.png'"-->
+          <!--            alt="{{ book.previewUrl }}"-->
+          <!--          />-->
           <h3 matLine style="padding-left: 20px;">{{ book.name }}</h3>
           <!--        <p matLine>-->
           <!--          <span> {{ book.description }} </span>-->
@@ -53,6 +60,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatLineModule,
     ScrollingModule,
     MatProgressSpinnerModule,
+    BookIconComponent,
   ],
   styles: [
     `

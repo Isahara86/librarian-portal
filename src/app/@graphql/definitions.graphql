@@ -2,7 +2,11 @@ query booksList ($input: BookSearchInput!) {
   books(input: $input) {
     id
     name
-    previewUrl
+    previewOrig
+    previewJpeg
+    previewWebp
+    previewJpegThumbnail
+    previewWebpThumbnail
     description
     isAvailable
   }
@@ -73,7 +77,11 @@ query bookDetails($id: Int!) {
     id
     name
     description
-    previewUrl
+    previewOrig
+    previewJpeg
+    previewWebp
+    previewJpegThumbnail
+    previewWebpThumbnail
     categories {
       id
       name
@@ -121,7 +129,11 @@ query customerDetails($id: Int!) {
         book {
           id
           name
-          previewUrl
+          previewOrig
+          previewJpeg
+          previewWebp
+          previewJpegThumbnail
+          previewWebpThumbnail
         }
       }
     }

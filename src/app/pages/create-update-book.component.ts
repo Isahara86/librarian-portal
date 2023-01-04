@@ -78,7 +78,7 @@ import { StorageService } from '../services/storage.service';
           style="max-height: 100%; width: auto;"
           mat-card-image
           [src]="preview && preview !== null ? preview : '/assets/camera-icon.png'"
-          alt="Photo of a Shiba Inu"
+          alt="Book preview"
         />
       </mat-card>
 
@@ -262,7 +262,7 @@ export class CreateUpdateBookComponent implements OnInit, OnDestroy {
       this.bookForm.controls.description.patchValue(book.description);
     }
 
-    this.preview = book.previewUrl;
+    this.preview = book.previewJpeg;
 
     // if (book.inventories.length) {
     //   this.createBookForm.controls.inventories.controls[0].patchValue(book.inventories[0]);
