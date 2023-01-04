@@ -92,7 +92,7 @@ export class BooksListComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.fetchBooks().then(() => this.fetchMore());
+    this.fetchMoreBooks();
   }
 
   ngAfterViewInit(): void {
@@ -108,7 +108,7 @@ export class BooksListComponent implements OnInit, AfterViewInit {
         filter(([y1, y2]) => y2 < y1 && y2 < 140 && this.hasMore),
         throttleTime(200),
       )
-      .subscribe(() => this.ngZone.run(() => this.fetchMore()));
+      .subscribe(() => this.ngZone.run(() => this.fetchMoreBooks()));
   }
 
   async onSearchUpdate(query?: string): Promise<void> {
@@ -116,15 +116,10 @@ export class BooksListComponent implements OnInit, AfterViewInit {
     this.books = [];
     this.offset = 0;
     this.hasMore = true;
-    return this.fetchBooks().then(() => this.fetchMore());
+    return this.fetchMoreBooks();
   }
 
-  async fetchMore(): Promise<void> {
-    this.offset += this.limit;
-    return this.fetchBooks();
-  }
-
-  async fetchBooks(): Promise<void> {
+  async fetchMoreBooks(): Promise<void> {
     return firstValueFrom(
       this.booksListGQL.fetch({
         input: {
@@ -136,6 +131,7 @@ export class BooksListComponent implements OnInit, AfterViewInit {
     ).then(res => {
       if (res.data) {
         this.books = [...this.books, ...res.data.books];
+        this.offset += this.limit;
         if (res.data.books.length < this.limit) {
           this.hasMore = false;
         }
