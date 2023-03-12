@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 import { LoadingComponent } from '../dialogs/loading.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { firstValueFrom, Observable } from 'rxjs';
+import { SelectBookComponent } from '../pages/select-book.component';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,32 @@ export class DialogService {
     // private overlay: Overlay
     public dialog: MatDialog,
   ) {}
+
+  public choseBookInventory(): Promise<number> {
+    if (this.dialogRef) {
+      this.hide();
+    }
+
+    const dialogRef = this.dialog.open(SelectBookComponent, {
+      panelClass: 'no-background',
+      disableClose: true,
+      autoFocus: true,
+    });
+
+    this.dialogRef = dialogRef;
+
+    return new Promise<number>(resolve => {
+      const dialogSubmitSubscription = dialogRef.componentInstance.submitClicked.subscribe(
+        result => {
+          console.log('Got the data!', result);
+          // do something here with the data
+          dialogSubmitSubscription.unsubscribe();
+          this.hide();
+          resolve(result as any);
+        },
+      );
+    });
+  }
 
   public showLoading() {
     if (this.dialogRef) {

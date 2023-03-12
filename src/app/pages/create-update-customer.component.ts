@@ -11,9 +11,11 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  CreateBookReservationGQL,
   CreateCustomerGQL,
   CustomerDetailsGQL,
   CustomerDetailsQuery,
+  Scalars,
   UpdateCustomerGQL,
 } from '../@graphql/_generated';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -59,6 +61,17 @@ import { AppTextareaComponent } from '../components/app-textarea.component';
         {{ existingCustomer ? 'Update' : 'Create' }}
       </button>
     </app-form>
+    <div style="padding: 20px">
+      <button
+        style="width: 100%;"
+        mat-raised-button
+        color="primary"
+        *ngIf="existingCustomer"
+        (click)="reserveBook()"
+      >
+        Reserve book
+      </button>
+    </div>
   `,
   styles: [],
 })
@@ -90,6 +103,7 @@ export class CreateUpdateCustomerComponent implements OnInit {
     private createCustomerGQL: CreateCustomerGQL,
     private updateCustomerGQL: UpdateCustomerGQL,
     private customerDetailsGQL: CustomerDetailsGQL,
+    private createBookReservationGQL: CreateBookReservationGQL,
     private dialogService: DialogService,
   ) {}
 
@@ -184,5 +198,28 @@ export class CreateUpdateCustomerComponent implements OnInit {
         .then(() => this.router.navigate([this.returnUrl]))
         .catch(err => (this.error = err));
     }
+  }
+
+  async reserveBook(): Promise<void> {
+    const bookInventoryId = await this.dialogService.choseBookInventory();
+
+    if (!bookInventoryId || !this.existingCustomer) {
+      return;
+    }
+
+    await this.dialogService
+      .showLoadingUntil(
+        this.createBookReservationGQL.mutate({
+          input: {
+            bookInventoryId,
+            customerId: this.existingCustomer.id,
+            description: 'Book reservation',
+            endAt: Date.now(),
+            startAt: Date.now(),
+          },
+        }),
+      )
+      .then(() => this.router.navigate([this.returnUrl]))
+      .catch(err => (this.error = err));
   }
 }

@@ -9,6 +9,10 @@ query booksList ($input: BookSearchInput!) {
     previewWebpThumbnail
     description
     isAvailable
+    authors {
+      id
+      name
+    }
   }
 }
 
@@ -148,6 +152,13 @@ mutation createCustomer($input: CustomerCreateInput!) {
 
 mutation updateCustomer($input: CustomerUpdateInput!) {
   updateCustomer(input: $input) {
+    id
+  }
+}
+
+
+mutation createBookReservation($input: BookInventoryReservationCreateInput!) {
+  createBookReservation(input: $input) {
     id
   }
 }

@@ -7,6 +7,10 @@ export const appRoutes: Routes = [
     loadComponent: () => import('./pages/books-list.component').then(m => m.BooksListComponent),
     //   loadChildren: () => import("./app/layout/layout.routes").then((m) => m.routes),
   },
+  {
+    path: 'book/:id',
+    loadComponent: () => import('./pages/book-details.component').then(m => m.BookDetailsComponent),
+  },
 
   {
     path: 'customers-list',

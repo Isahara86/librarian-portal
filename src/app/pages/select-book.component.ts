@@ -1,5 +1,13 @@
-import { AfterViewInit, Component, NgZone, OnInit, ViewChild } from '@angular/core';
-import { BookDetailsQuery, BooksListGQL, BooksListQuery } from '../@graphql/_generated';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  NgZone,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
+import { BookDetailsGQL, BooksListGQL, BooksListQuery } from '../@graphql/_generated';
 import { filter, firstValueFrom, map, pairwise, throttleTime } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -18,10 +26,18 @@ import { BookIconComponent } from '../components/book-icon.component';
 @Component({
   standalone: true,
   template: `
+    <button
+      style="width: 100%;"
+      mat-raised-button
+      color="primary"
+      (click)="submitClicked.emit(null)"
+    >
+      Cancel
+    </button>
     <app-search style="flex: 1" (valueChanged)="onSearchUpdate($event)"></app-search>
 
-    <cdk-virtual-scroll-viewport #scroller class="content" itemSize="90">
-      <mat-list-item *ngFor="let book of books" (click)="goToBookDetails(book.id)">
+    <cdk-virtual-scroll-viewport style="background: white" #scroller class="content" itemSize="90">
+      <mat-list-item *ngFor="let book of books" (click)="selectBook(book.id)">
         <div
           [style.opacity]="book.isAvailable ? 1 : 0.5"
           style="display: flex; flex-direction: row; height: 90px; padding-left: 20px; padding-top: 10px;"
@@ -82,7 +98,9 @@ import { BookIconComponent } from '../components/book-icon.component';
     `,
   ],
 })
-export class BooksListComponent implements OnInit, AfterViewInit {
+export class SelectBookComponent implements OnInit, AfterViewInit {
+  @Output() submitClicked = new EventEmitter<number | null>();
+
   books: BooksListQuery['books'] = [];
   offset = 0;
   limit = 15;
@@ -92,6 +110,7 @@ export class BooksListComponent implements OnInit, AfterViewInit {
 
   constructor(
     private booksListGQL: BooksListGQL,
+    private bookDetailsGQL: BookDetailsGQL,
     readonly authService: AuthService,
     private router: Router,
     private ngZone: NgZone,
@@ -145,10 +164,9 @@ export class BooksListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  goToBookDetails(bookId: number): void {
-    // if (this.authService.admin$.getValue()) {
-    this.router.navigate(['book', bookId]);
-    // }
+  async selectBook(bookId: number): Promise<void> {
+    const res = await firstValueFrom(this.bookDetailsGQL.fetch({ id: bookId }));
+    this.submitClicked.emit(res.data?.bookDetails.inventories[0]?.id);
   }
 
   getAuthors(authors?: ReadonlyArray<{ readonly name: string }>): string {

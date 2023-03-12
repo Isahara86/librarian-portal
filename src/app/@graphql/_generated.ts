@@ -406,7 +406,7 @@ export type BooksListQueryVariables = Exact<{
 }>;
 
 
-export type BooksListQuery = { readonly books: ReadonlyArray<{ readonly id: number, readonly name: string, readonly previewOrig?: string | null, readonly previewJpeg?: string | null, readonly previewWebp?: string | null, readonly previewJpegThumbnail?: string | null, readonly previewWebpThumbnail?: string | null, readonly description?: string | null, readonly isAvailable: boolean }> };
+export type BooksListQuery = { readonly books: ReadonlyArray<{ readonly id: number, readonly name: string, readonly previewOrig?: string | null, readonly previewJpeg?: string | null, readonly previewWebp?: string | null, readonly previewJpegThumbnail?: string | null, readonly previewWebpThumbnail?: string | null, readonly description?: string | null, readonly isAvailable: boolean, readonly authors: ReadonlyArray<{ readonly id: number, readonly name: string }> }> };
 
 export type AdminLoginMutationVariables = Exact<{
   input: AdminLoginInput;
@@ -504,6 +504,13 @@ export type UpdateCustomerMutationVariables = Exact<{
 
 export type UpdateCustomerMutation = { readonly updateCustomer: { readonly id: number } };
 
+export type CreateBookReservationMutationVariables = Exact<{
+  input: BookInventoryReservationCreateInput;
+}>;
+
+
+export type CreateBookReservationMutation = { readonly createBookReservation: { readonly id: number } };
+
 export const BooksListDocument = gql`
     query booksList($input: BookSearchInput!) {
   books(input: $input) {
@@ -516,6 +523,10 @@ export const BooksListDocument = gql`
     previewWebpThumbnail
     description
     isAvailable
+    authors {
+      id
+      name
+    }
   }
 }
     `;
@@ -832,6 +843,24 @@ export const UpdateCustomerDocument = gql`
   })
   export class UpdateCustomerGQL extends Apollo.Mutation<UpdateCustomerMutation, UpdateCustomerMutationVariables> {
     override document = UpdateCustomerDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateBookReservationDocument = gql`
+    mutation createBookReservation($input: BookInventoryReservationCreateInput!) {
+  createBookReservation(input: $input) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateBookReservationGQL extends Apollo.Mutation<CreateBookReservationMutation, CreateBookReservationMutationVariables> {
+    override document = CreateBookReservationDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
